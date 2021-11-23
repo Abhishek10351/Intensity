@@ -111,7 +111,8 @@ class moderation(commands.Cog):
         role_id = fetch(
             f'select role_id from muted_roles where guild_id = {ctx.guild.id}')
         if role_id is None:
-            muted_roles.insert_one({"_id":ctx.guild.id, "role":muted_role.id})
+            execute(
+                f'insert into muted_roles values({ctx.guild.id}, {role.id});')
             await ctx.send(embed=nextcord.Embed(description=f'**{role.mention} is saved as a muted role.**', color=0Xff0000))
             return
         elif role_id[0] != role.id:

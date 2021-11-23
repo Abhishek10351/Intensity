@@ -5,4 +5,3 @@ load_dotenv()
 cluster = MongoClient(getenv("mongo_token"))
 commands = cluster.discord.commands
 prefixes = cluster.discord.prefix
-mute_roles = cluster.discord.mute_role
