@@ -98,6 +98,21 @@ class Utility(commands.Cog):
             old_prefix = prefixes.find_one({"_id":ctx.message.guild.id})
             prefixes.update_one({"_id":ctx.message.guild.id}, {"$set": {"prefix":new_prefix.strip()}})
             await ctx.send(embed=nextcord.Embed(description=f'**Prefix changed in {ctx.guild} from `{old_prefix["prefix"]}` to `{new_prefix.strip()}` **', color=nextcord.Colour.random()))
+    
+    @commands.command(aliases=["userinfo", "member", "memberinfo"])
+    @commands.guild_only()
+    async def user(self, ctx, member: nextcord.Member=None):
+        member = member or ctx.author
+        embed = nextcord.Embed(description=member.mention, colour=member.colour)
+        #embed.add_field(name="Permissions", values=)
+        embed.add_field(name="Account created", value=member.created_at.strftime("%I:%m %p, %B %d %Y"))
+        embed.add_field(name="Joined at", value=member.joined_at.strftime("%I:%m %p, %B %d %Y"))
+        
+        embed.add_field(name="Roles", value="".join(map(lambda i: i.mention if i.id!=ctx.guild.id else "", member.roles)), inline=False)
+        embed.set_author(name=member, icon_url=member.display_avatar.url)
+        embed.set_footer(text=f"Invoked by {ctx.author}", icon_url=ctx.author.display_avatar.url)
+        embed.set_thumbnail(url=member.display_avatar.url)
+        await ctx.send(embed=embed)
 
     @commands.command()
     async def uptime(self, ctx):
