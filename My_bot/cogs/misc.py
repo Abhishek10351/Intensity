@@ -26,7 +26,7 @@ class misc(commands.Cog):
 
         @timer
         def database():
-            fetch(f'select prefix from prefixes where guild_id = {ctx.guild.id} ;')[
+            fetch(f'select * from mute_roles where guild_id = {ctx.guild.id}')[
                 0]
 
         embed = nextcord.Embed(description='**Ping**',
