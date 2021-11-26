@@ -28,13 +28,13 @@ class Utility(commands.Cog):
                 emote_size += 1
         await ctx.send(embed=nextcord.Embed(title=f'**Total Emojis:{len(emojis)}\nEmotes:{emote_size}\nAnimated:{animated_size}**', description=emotes + animated, color=nextcord.Colour.random()))
 
-    @commands.command(name='roles')
+    @commands.command(aliases=["server_roles"])
     @commands.guild_only()
     @commands.cooldown(1, 40, commands.BucketType.channel)
     async def roles(self, ctx: commands.Context):
         """Shows all the roles available in the current server """
-        all_roles = [i.mention if i.name !=
-                     '@everyone' else i.name for i in ctx.guild.roles]
+        all_roles = [i.mention if i.id !=
+                     ctx.guild.id else i.name for i in ctx.guild.roles]
         all_roles.reverse()
         await ctx.send(embed=nextcord.Embed(title=f'**Roles Available in {ctx.guild.name}**', description='\n'.join(all_roles)))
 
@@ -83,7 +83,7 @@ class Utility(commands.Cog):
         embed.set_thumbnail(url=ctx.guild.icon)
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(aliases=["change_prefix"])
     @commands.has_permissions(administrator=True)
     @commands.cooldown(1, 10, commands.BucketType.guild)
     async def prefix(self, ctx, new_prefix: str=None):
