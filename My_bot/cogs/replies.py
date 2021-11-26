@@ -12,7 +12,9 @@ class Reply(commands.Cog):
 
     @commands.Cog.listener("on_command_error")
     async def errors(self, ctx: commands.Context, error):
-        if isinstance(error, commands.MemberNotFound):
+        if isinstance(error, commands.CommandNotFound):
+            pass
+        elif isinstance(error, commands.MemberNotFound):
             await ctx.send(embed=nextcord.Embed(description=f"**{error}**", colour=nextcord.Colour.red()))
         elif isinstance(error, commands.errors.RoleNotFound):
             await ctx.message.add_reaction('😬')
