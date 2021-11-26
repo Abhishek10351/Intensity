@@ -12,7 +12,6 @@ import time
 from datetime import timedelta, datetime
 from errors import SlowmodeError
 import re
-from mongo import mute_roles
 
 
 class moderation(commands.Cog):
@@ -135,8 +134,8 @@ class moderation(commands.Cog):
             f'select role_id from muted_roles where guild_id = {ctx.guild.id}')
         if role_id is None:
             prefix = fetch(
-                f'select prefix from prefixes where guild_id = {ctx.guild.id} ;')
-            await ctx.send(embed=nextcord.Embed(description=f'**{ctx.author.mention} I have no muted role configured in {ctx.guild.name}\nUse `{prefix[0]}muterole role` to do that**'))
+                f'select role_id from muted_roles where guild_id = {ctx.guild.id} ;')
+            await ctx.send(embed=nextcord.Embed(description=f'**{ctx.author.mention} I have no muted role configured in {ctx.guild.name}\nUse `[p]muterole role` to do that**'))
             return
         muted_role = nextcord.utils.get(ctx.guild.roles, id=int(role_id[0]))
         my_top_role = ctx.guild.me.top_role
@@ -154,15 +153,15 @@ class moderation(commands.Cog):
             await ctx.send(embed=nextcord.Embed(description=f'**{member.mention} has already been muted**', color=0Xff0000))
             return
         elif member == ctx.guild.owner:
-            await ctx.send(embed=nextcord.Embed(description=f'**<a:toothless:859342271631458325> I can\'t mute the server ownwer**', color=0Xff0000))
+            await ctx.send(embed=nextcord.Embed(description=f'**<a:toothless:859342271631458325> I can\'t mute the server owner**', color=0Xff0000))
             return
         elif my_top_role < muted_role:
-            await ctx.send(embed=nextcord.Embed(description=f'**Damn I can\'t mute due to muted role position**', color=0Xff0000))
+            await ctx.send(embed=nextcord.Embed(description=f"**Damn I can't mute due to muted role position**", color=0Xff0000))
             return
         else:
             if not ctx.author == ctx.guild.owner:
                 if ctx.author.top_role >= member.top_role:
-                    await ctx.send(embed=nextcord.Embed(description=f'**You can\'t mute members with same top role or higher roles than you**', color=0Xff0000))
+                    await ctx.send(embed=nextcord.Embed(description=f"**You can't mute members with same top role or higher roles than you**", color=0Xff0000))
                     return
                 elif ctx.author.top_role < muted_role:
                     await ctx.send(embed=nextcord.Embed(description=f'**You can\'t mute members because of position of the role**', color=0Xff0000))
@@ -188,8 +187,8 @@ class moderation(commands.Cog):
             f'select role_id from muted_roles where guild_id = {ctx.guild.id}')
         if role_id is None:
             prefix = fetch(
-                f'select prefix from prefixes where guild_id = {ctx.guild.id} ;')
-            await ctx.send(embed=nextcord.Embed(description=f'{ctx.author.mention} I have no muted role configured in {ctx.guild.name}\nUse `{prefix[0]}muterole role` to do that'))
+                f'select role_id from muted_roles where guild_id = {ctx.guild.id} ;')
+            await ctx.send(embed=nextcord.Embed(description=f'{ctx.author.mention} I have no muted role configured in {ctx.guild.name}\nUse `[p]muterole role` to do that'))
             return
         muted_role = nextcord.utils.get(ctx.guild.roles, id=int(role_id[0]))
         my_top_role = ctx.guild.me.top_role.position
@@ -308,7 +307,7 @@ class moderation(commands.Cog):
     @commands.has_permissions(manage_nicknames=True, change_nickname=True)
     @commands.bot_has_permissions(manage_nicknames=True, change_nickname=True)
     @commands.guild_only()
-    async def nickname(self, ctx, member: Optional[nextcord.Member]=None, *, _nick=''):
+    async def nickname(self, ctx, member: Optional[nextcord.Member]=None, *, _nick=None):
         """Change your nickname or just mess up your friend's name"""
         member = member or ctx.author
         if len(_nick) > 32:
@@ -319,7 +318,7 @@ class moderation(commands.Cog):
         except:
             await ctx.send(f"**I don't have enough perms to change {member}'s nickname**")
             return
-        await ctx.reply(f'**Nickname changed to {member.display_name}**')
+        await ctx.reply(f'**Nickname changed to {_nick or member.display_name}**')
 
     @commands.command(name='purge', aliases=['clean', 'delete'])
     @commands.cooldown(1, 5)
