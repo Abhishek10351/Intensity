@@ -24,10 +24,9 @@ class Reply(commands.Cog):
         elif isinstance(error, commands.NoPrivateMessage):
             await ctx.send('**This command works only on servers**')
         elif isinstance(error, commands.MissingPermissions):
-            perms = error.missing_perms
-            await ctx.send(f'**You don\'t have the {", ".join(perms)} permissions for this command**')
+            pass
         elif isinstance(error, commands.BotMissingPermissions):
-            bot_perms = error.missing_perms
+            bot_perms = error.missing_permissions
             await ctx.send(f"**I don't have {', '.join(bot_perms)} permissions**")
         else:
             await ctx.send(error)
