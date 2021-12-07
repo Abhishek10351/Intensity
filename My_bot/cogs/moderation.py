@@ -45,13 +45,18 @@ class moderation(commands.Cog):
         else:
             await ctx.send(error)
 
-    @commands.command(name='slowmode', aliases=['sm', 'slow'])
-    @commands.guild_only()
+    @commands.group(name='slowmode', aliases=['sm', 'slow'])
     @commands.cooldown(1, 10, commands.BucketType.channel)
     @commands.has_permissions(manage_channels=True)
     @commands.bot_has_permissions(manage_channels=True)
-    async def slowmode(self, ctx: commands.Context, _time: commands.Greedy[SlowmodeTimeConverter] = None):
-        """Set a slowmode in the current channel if the chat is going to fast """
+    @commands.guild_only()
+    async def slowmode(self, ctx):
+        """Change the slowmode delay in the current channel"""
+        pass
+
+    @slowmode.command(name="set")
+    async def set_sm(self, ctx: commands.Context, _time: commands.Greedy[SlowmodeTimeConverter] = None):
+        """Sets a slowmode in the current channel"""
         def get_slowmode_time(__seconds) -> str:
             message = ""
             if (__seconds >= 3600) and (__seconds % 21600 != 0):
@@ -60,36 +65,54 @@ class moderation(commands.Cog):
             if (__seconds >= 60) and (__seconds % 3600 != 0):
                 minutes = (__seconds // 60) % 60
                 message += f' {int(minutes)} minutes'
-            if __seconds % 60 != 0:
+            if (__seconds % 60 != 0) or (__seconds < 60):
                 seconds = __seconds % 60
                 message += f' {int(seconds)} seconds'
             return message
-        if _time is None:
-            if ctx.channel.slowmode_delay:
-                return await ctx.send(f"**The slowmode in {ctx.channel.mention} is {get_slowmode_time(ctx.channel.slowmode_delay)}**")
-            else:
-                return await ctx.send(f'**Currently there is no slowmode in {ctx.channel.mention}**')
-        if 0 in _time and len(_time) > 1:
-            await ctx.send('**Invalid format\nThe correct format is `,slowmode 1s 1m 0h`**')
-            return
-
-        if _time[0] == 0:
+        
+        delta = timedelta()
+        for i in _time:
+            try:
+                delta += i
+            except:
+                await ctx.send("**Invalid parameters provided**")
+                return
+        __seconds = delta.seconds
+        message = f"**Set the slowmode in {ctx.channel.mention} to {get_slowmode_time(__seconds)}**"
+        if __seconds == 0:
             if ctx.channel.slowmode_delay:
                 await ctx.channel.edit(slowmode_delay=0)
                 await ctx.send(f"**Slowmode turned off in {ctx.channel.mention}**")
             else:
                 await ctx.send(f'**Currently there is no slowmode in {ctx.channel.mention}**')
             return
-        delta = timedelta()
-        for i in _time:
-            delta += i
-        __seconds = delta.seconds
-        message = f"**Set the slowmode in {ctx.channel.mention} to {get_slowmode_time(__seconds)}**"
-        if 0 <= __seconds <= 21600:
+        elif 0 <= __seconds <= 21600:
             await ctx.channel.edit(slowmode_delay=int(delta.seconds))
             await ctx.send(message)
         else:
             await ctx.send('**You can only input time from 0 seconds to 6 hours**')
+
+    @slowmode.command(aliases=["turnoff", "off"])
+    async def reset(self, ctx):
+        """Reset the slowmode in the current channel"""
+        def get_slowmode_time(seconds) -> str:
+            message = ""
+            if (seconds >= 3600) and (seconds % 21600 != 0):
+                hours = __seconds // 3600
+                message += f' {int(hours)} hours'
+            if (seconds >= 60) and (seconds % 3600 != 0):
+                minutes = (seconds // 60) % 60
+                message += f' {int(minutes)} minutes'
+            if (seconds % 60 != 0) or (seconds < 60):
+                seconds = seconds % 60
+                message += f' {int(seconds)} seconds'
+            return message
+        if ctx.channel.slowmode_delay:
+            await ctx.send(f"**The slowmode in {ctx.channel.mention} is {get_slowmode_time(ctx.channel.slowmode_delay)}**")
+            return
+        else:
+            await ctx.send(f'**Currently there is no slowmode in {ctx.channel.mention}**')
+            return
 
     @commands.command(name='muterole')
     @commands.has_permissions(administrator=True)

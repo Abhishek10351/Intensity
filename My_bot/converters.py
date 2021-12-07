@@ -56,18 +56,15 @@ class SlowmodeTimeConverter(Converter):
         _seconds = ('seconds', 'second', 'sec', 's')
         _minutes = ('minutes', 'minute', 'min', 'm')
         _hours = ('hours', 'hour', 'hr', 'h')
-        if argument in ['turnoff', 'off', '0', 'reset']:
-            return 0
+        if re.search("|".join(_minutes), argument):
+            minutes = re.findall(r"^\d+", argument)[0]
+            return timedelta(minutes=int(minutes))
+        elif re.search("|".join(_hours), argument):
+            hours = re.findall(r"^\d+", argument)[0]
+            print(hours)
+            return timedelta(hours=int(hours))
+        elif re.search("|".join(_seconds), argument):
+            seconds = re.findall(r"^\d+", argument)[0]
+            return timedelta(seconds=int(seconds))
         else:
-            if re.search("|".join(_minutes), argument):
-                minutes = re.findall(r"^\d+", argument)[0]
-                return timedelta(minutes=int(minutes))
-            elif re.search("|".join(_hours), argument):
-                hours = re.findall(r"^\d+", argument)[0]
-                print(hours)
-                return timedelta(hours=int(hours))
-            elif re.search("|".join(_seconds), argument):
-                seconds = re.findall(r"^\d+", argument)[0]
-                return timedelta(seconds=int(seconds))
-            else:
-                raise ValueError
+            return None
