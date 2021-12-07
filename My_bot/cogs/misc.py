@@ -3,6 +3,7 @@ from nextcord.ext import commands
 import time
 from sql import fetch
 from timeit import timeit
+from mongo import prefixes
 
 
 class misc(commands.Cog):
@@ -25,18 +26,23 @@ class misc(commands.Cog):
         k = time.time() - k
 
         @timer
-        def database():
-            fetch(f'select * from mute_roles where guild_id = {ctx.guild.id}')[
-                0]
+        def sqldb():
+            fetch(f'select * from muted_roles where guild_id = {ctx.guild.id}')
+
+        @timer
+        def mongodb():
+            prefixes.find_one({"_id": ctx.guild.id})
 
         embed = nextcord.Embed(description='**Ping**',
                                colour=nextcord.Colour.red())
-        embed.add_field(name='Bot Latency',
+        embed.add_field(name='Discord Websocket Latency <:discord:915501670979477524>',
                         value=f'`{round((self.Intensity.latency) * 1000)} ms`')
         embed.add_field(
             name='Typing Latency <a:typing:883235601187487824>', value=f'`{round(k*1000)} ms`')
-        embed.add_field(name='Database Latency',
-                        value=f'`{round(database()*1000)} ms`')
+        embed.add_field(name='Sqlite3 Latency <:sqlite3:879576089238831145>',
+                        value=f'`{round(sqldb()*1000)} ms`')
+        embed.add_field(name="MongoDB Latency <:mongo_db:915501188978454568>",
+                        value=f"`{round(mongodb()*1000)} ms`", inline=True)
         await a.edit(content='', embed=embed)
 
 
