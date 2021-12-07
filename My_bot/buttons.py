@@ -1,4 +1,4 @@
-from nextcord import ui, ButtonStyle, Interaction
+from disnake import ui, ButtonStyle, Interaction
 from typing import List
 
 
@@ -101,15 +101,13 @@ class RPSButtons(ui.Button):
 
     async def callback(self, interaction: Interaction):
         view = self.view
-        await view.stop()
-        return
         if interaction.user not in [view.player, view.opponent]:
             await interaction.response.send_message("https://tenor.com/view/rick-roll-rick-ashley-never-gonna-give-you-up-gif-22113173", ephemeral=True)
         else:
             if view.game[interaction.user] is None:
                 view.game[interaction.user] = self.value
                 if None in view.game.values():
-                    await interaction.response.edit_message(content=f"**{interaction.user} has mad their move**", view=view)
+                    await interaction.response.edit_message(content=f"**{interaction.user} has made their move**", view=view)
                     return
                 else:
                     ac = view.game[view.player]
@@ -120,15 +118,15 @@ class RPSButtons(ui.Button):
                         i.disabled = True
 
                     if val == 0:
-                        await interaction.response.edit_message(content="It's a draw", view=view)
+                        await interaction.response.edit_message(content="**It's a draw**", view=view)
                         return
                     elif val == 1:
-                        await interaction.response.edit_message(content=f"{view.player} Won by chosing {ac}", view=view)
+                        await interaction.response.edit_message(content=f"**{view.player} Won by chosing {ac}**", view=view)
                         return
                     elif val == -1:
-                        await interaction.response.edit_message(content=f"{view.opponent} Won by chosing {pc}", view=view)
+                        await interaction.response.edit_message(content=f"**{view.opponent} Won by chosing {pc}**", view=view)
                         return
-                await interaction.response.edit_message(content=f"{interaction.user} has chosen", view=view)
+                await interaction.response.edit_message(content=f"**{interaction.user} has chosen**", view=view)
             else:
                 await interaction.response.send_message(":grimacing: you already selected", ephemeral=True)
 
@@ -164,4 +162,4 @@ class RPSGames(ui.View):
         }
 
     async def interaction_check(self, interation):
-        return False
+        return True

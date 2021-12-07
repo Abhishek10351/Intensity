@@ -1,8 +1,8 @@
-import nextcord
-from nextcord.ext import commands
+import disnake
+from disnake.ext import commands
 from random import choice
 from emojis import dance, phil, no
-from nextcord.utils import get
+from disnake.utils import get
 from numpy import array
 
 
@@ -15,10 +15,10 @@ class Reply(commands.Cog):
         if isinstance(error, commands.CommandNotFound):
             pass
         elif isinstance(error, commands.MemberNotFound):
-            await ctx.send(embed=nextcord.Embed(description=f"**{error}**", colour=nextcord.Colour.red()))
+            await ctx.send(embed=disnake.Embed(description=f"**{error}**", colour=disnake.Colour.red()))
         elif isinstance(error, commands.errors.RoleNotFound):
             await ctx.message.add_reaction('😬')
-            await ctx.send(embed=nextcord.Embed(description=f"**{error.argument} is not a valid role**", colour=nextcord.Colour.red()))
+            await ctx.send(embed=disnake.Embed(description=f"**{error.argument} is not a valid role**", colour=disnake.Colour.red()))
         elif isinstance(error, commands.CommandOnCooldown):
             await ctx.send(f'**You\'re on cooldown try again in {round(error.retry_after)} seconds**')
         elif isinstance(error, commands.NoPrivateMessage):

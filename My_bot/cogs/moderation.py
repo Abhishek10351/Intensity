@@ -1,7 +1,7 @@
-import nextcord
-from nextcord.ext import commands
+import disnake
+from disnake.ext import commands
 from random import choice
-from nextcord.utils import get
+from disnake.utils import get
 from random import choice
 from sql import execute, fetch
 from typing import Union, Optional
@@ -24,15 +24,15 @@ class moderation(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(1, 3)
     @commands.has_permissions(kick_members=True)
-    async def warn(self, ctx, member: nextcord.Member = None, *, reason):
+    async def warn(self, ctx, member: disnake.Member = None, *, reason):
         if member is None:
-            await ctx.send(embed=nextcord.Embed(description="**Idiot who do u wanna warn**", color=0Xff0000))
+            await ctx.send(embed=disnake.Embed(description="**Idiot who do u wanna warn**", color=0Xff0000))
         elif member.bot:
-            await ctx.reply(embed=nextcord.Embed(description='**Stupid don\'t u know I can\'t dm a bot**', color=0Xff0000))
+            await ctx.reply(embed=disnake.Embed(description='**Stupid don\'t u know I can\'t dm a bot**', color=0Xff0000))
         else:
-            message = nextcord.Embed(
+            message = disnake.Embed(
                 description=f'**You have been warned in {ctx.guild} \nReason: {reason}\nModerator: {ctx.author.mention}**', color=0Xff0000)
-            reply = nextcord.Embed(
+            reply = disnake.Embed(
                 description=f'**{member.mention} has been warned.\nReason: {reason}**', color=0Xff0000)
             await member.send(embed=message)
             await ctx.send(embed=reply)
@@ -40,8 +40,8 @@ class moderation(commands.Cog):
     @warn.error
     async def warn_error(self, ctx, error):
         a = getattr(error, "original",  error)
-        if isinstance(a, nextcord.Forbidden):
-            await ctx.send(embed=nextcord.Embed(description='**That idiot has blocked me so I couldn\'t dm**'))
+        if isinstance(a, disnake.Forbidden):
+            await ctx.send(embed=disnake.Embed(description='**That idiot has blocked me so I couldn\'t dm**'))
         else:
             await ctx.send(error)
 
@@ -95,175 +95,175 @@ class moderation(commands.Cog):
     @commands.has_permissions(administrator=True)
     @commands.bot_has_permissions(manage_roles=True)
     @commands.guild_only()
-    async def muterole(self, ctx, role: nextcord.Role = None):
+    async def muterole(self, ctx, role: disnake.Role = None):
         me = ctx.guild.me
         if role.is_default() or role.is_integration() or role.is_bot_managed() or role.is_premium_subscriber() or role is None:
-            await ctx.send(embed=nextcord.Embed(description=f'**Please enter a valid role to save as Mute role**', color=0Xff0000))
+            await ctx.send(embed=disnake.Embed(description=f'**Please enter a valid role to save as Mute role**', color=0Xff0000))
             return
         elif me.top_role <= role:
-            await ctx.send(embed=nextcord.Embed(description=f'**{choice(no)} I can\'t set that role as muted role because it has a higher position than my top role**', color=0Xff0000))
+            await ctx.send(embed=disnake.Embed(description=f'**{choice(no)} I can\'t set that role as muted role because it has a higher position than my top role**', color=0Xff0000))
             return
         elif (not ctx.author == ctx.guild.owner) and ctx.author.top_role <= role:
-            await ctx.send(embed=nextcord.Embed(description=f'**You can\'t set roles higher than you as muted role**', color=0Xff0000))
+            await ctx.send(embed=disnake.Embed(description=f'**You can\'t set roles higher than you as muted role**', color=0Xff0000))
             return
         role_id = fetch(
             f'select role_id from muted_roles where guild_id = {ctx.guild.id}')
         if role_id is None:
             execute(
                 f'insert into muted_roles values({ctx.guild.id}, {role.id});')
-            await ctx.send(embed=nextcord.Embed(description=f'**{role.mention} is saved as a muted role.**', color=0Xff0000))
+            await ctx.send(embed=disnake.Embed(description=f'**{role.mention} is saved as a muted role.**', color=0Xff0000))
             return
         elif role_id[0] != role.id:
-            muted_role = nextcord.utils.get(
+            muted_role = disnake.utils.get(
                 ctx.guild.roles, id=int(role_id[0]))
             execute(
                 f'update muted_roles set role_id = {role.id} where guild_id = {ctx.guild.id}')
-            await ctx.send(embed=nextcord.Embed(description=f'**Mute role changed from {muted_role.mention} to {role.mention}**', color=0Xff0000))
+            await ctx.send(embed=disnake.Embed(description=f'**Mute role changed from {muted_role.mention} to {role.mention}**', color=0Xff0000))
             return
         else:
-            await ctx.send(embed=nextcord.Embed(description=f'**{role.mention} is already saved as a muted role in this server**', color=0Xff0000))
+            await ctx.send(embed=disnake.Embed(description=f'**{role.mention} is already saved as a muted role in this server**', color=0Xff0000))
 
     @commands.command()
     @commands.guild_only()
     @commands.has_permissions(kick_members=True, manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
-    async def mute(self, ctx, member: nextcord.Member = None, _time: commands.Greedy[TimeConverter] = None, reason="Not Given"):
+    async def mute(self, ctx, member: disnake.Member = None, _time: commands.Greedy[TimeConverter] = None, reason="Not Given"):
         """Give users a infraction """
         role_id = fetch(
             f'select role_id from muted_roles where guild_id = ( ? )', ctx.guild.id)
         if role_id is None:
             prefix = fetch(
                 f'select role_id from muted_roles where guild_id = {ctx.guild.id} ;')
-            await ctx.send(embed=nextcord.Embed(description=f'**{ctx.author.mention} I have no muted role configured in {ctx.guild.name}\nUse `[p]muterole role` to do that**'))
+            await ctx.send(embed=disnake.Embed(description=f'**{ctx.author.mention} I have no muted role configured in {ctx.guild.name}\nUse `[p]muterole role` to do that**'))
             return
-        muted_role = nextcord.utils.get(ctx.guild.roles, id=int(role_id[0]))
+        muted_role = disnake.utils.get(ctx.guild.roles, id=int(role_id[0]))
         my_top_role = ctx.guild.me.top_role
         muted_position = muted_role.position
         if member is None:
-            await ctx.send(embed=nextcord.Embed(description='**Idiot enter a member to mute**', color=0Xff0000))
+            await ctx.send(embed=disnake.Embed(description='**Idiot enter a member to mute**', color=0Xff0000))
             return
         elif member == ctx.author:
-            await ctx.send(embed=nextcord.Embed(description='**Dude you can\'t mute yourself**', color=0Xff0000))
+            await ctx.send(embed=disnake.Embed(description='**Dude you can\'t mute yourself**', color=0Xff0000))
             return
         elif member == ctx.guild.me:
-            await ctx.send(embed=nextcord.Embed(description='**Nah I will not mute myself**', color=0Xff0000))
+            await ctx.send(embed=disnake.Embed(description='**Nah I will not mute myself**', color=0Xff0000))
             return
         elif muted_role in member.roles:
-            await ctx.send(embed=nextcord.Embed(description=f'**{member.mention} has already been muted**', color=0Xff0000))
+            await ctx.send(embed=disnake.Embed(description=f'**{member.mention} has already been muted**', color=0Xff0000))
             return
         elif member == ctx.guild.owner:
-            await ctx.send(embed=nextcord.Embed(description=f'**<a:toothless:859342271631458325> I can\'t mute the server owner**', color=0Xff0000))
+            await ctx.send(embed=disnake.Embed(description=f'**<a:toothless:859342271631458325> I can\'t mute the server owner**', color=0Xff0000))
             return
         elif my_top_role < muted_role:
-            await ctx.send(embed=nextcord.Embed(description=f"**Damn I can't mute due to muted role position**", color=0Xff0000))
+            await ctx.send(embed=disnake.Embed(description=f"**Damn I can't mute due to muted role position**", color=0Xff0000))
             return
         else:
             if not ctx.author == ctx.guild.owner:
                 if ctx.author.top_role >= member.top_role:
-                    await ctx.send(embed=nextcord.Embed(description=f"**You can't mute members with same top role or higher roles than you**", color=0Xff0000))
+                    await ctx.send(embed=disnake.Embed(description=f"**You can't mute members with same top role or higher roles than you**", color=0Xff0000))
                     return
                 elif ctx.author.top_role < muted_role:
-                    await ctx.send(embed=nextcord.Embed(description=f'**You can\'t mute members because of position of the role**', color=0Xff0000))
+                    await ctx.send(embed=disnake.Embed(description=f'**You can\'t mute members because of position of the role**', color=0Xff0000))
                     return
             if muted_role in member.roles:
-                await ctx.send(embed=nextcord.Embed(description=f'{member.mention} is already muted', color=0Xff0000))
+                await ctx.send(embed=disnake.Embed(description=f'{member.mention} is already muted', color=0Xff0000))
                 return
             else:
                 await member.add_roles(muted_role)
-                await ctx.send(embed=nextcord.Embed(description=f'{member.mention} has been muted', color=0Xff0000))
+                await ctx.send(embed=disnake.Embed(description=f'{member.mention} has been muted', color=0Xff0000))
                 if not member.bot:
-                    await member.send(embed=nextcord.Embed(description=f'You have been muted in {ctx.guild.name}\nReason:{message}'))
+                    await member.send(embed=disnake.Embed(description=f'You have been muted in {ctx.guild.name}\nReason:{message}'))
 
     @commands.command(name='unmute')
     @commands.guild_only()
     @commands.has_permissions(kick_members=True, manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
-    async def unmute(self, ctx, member: nextcord.Member = None):
+    async def unmute(self, ctx, member: disnake.Member = None):
         if member is None:
-            await ctx.send(embed=nextcord.Embed(description=f'**Enter a member to mute idiot.**'))
+            await ctx.send(embed=disnake.Embed(description=f'**Enter a member to mute idiot.**'))
             return
         role_id = fetch(
             f'select role_id from muted_roles where guild_id = {ctx.guild.id}')
         if role_id is None:
             prefix = fetch(
                 f'select role_id from muted_roles where guild_id = {ctx.guild.id} ;')
-            await ctx.send(embed=nextcord.Embed(description=f'{ctx.author.mention} I have no muted role configured in {ctx.guild.name}\nUse `[p]muterole role` to do that'))
+            await ctx.send(embed=disnake.Embed(description=f'{ctx.author.mention} I have no muted role configured in {ctx.guild.name}\nUse `[p]muterole role` to do that'))
             return
-        muted_role = nextcord.utils.get(ctx.guild.roles, id=int(role_id[0]))
+        muted_role = disnake.utils.get(ctx.guild.roles, id=int(role_id[0]))
         my_top_role = ctx.guild.me.top_role.position
         muted_position = muted_role.position
         if member in [ctx.guild.me, ctx.author, ctx.guild.owner]:
-            await ctx.send(embed=nextcord.Embed(description="**Dude don't be stupid**", color=0Xff0000))
+            await ctx.send(embed=disnake.Embed(description="**Dude don't be stupid**", color=0Xff0000))
             return
         elif not muted_role in member.roles:
-            await ctx.send(embed=nextcord.Embed(description=f'**{member.mention} is not muted atm**', color=0Xff0000))
+            await ctx.send(embed=disnake.Embed(description=f'**{member.mention} is not muted atm**', color=0Xff0000))
             return
         elif my_top_role < muted_position:
-            await ctx.send(embed=nextcord.Embed(description=f'**Damn I can\'t unmute due to muted role hiearchy**', color=0Xff0000))
+            await ctx.send(embed=disnake.Embed(description=f'**Damn I can\'t unmute due to muted role hiearchy**', color=0Xff0000))
             return
         else:
             if ctx.author == ctx.guild.owner:
                 if ctx.author.top_role <= member.top_role:
-                    await ctx.send(embed=nextcord.Embed(description=f'**You can\'t mute members with same top role as you or with higher roles than you**', color=0Xff0000))
+                    await ctx.send(embed=disnake.Embed(description=f'**You can\'t mute members with same top role as you or with higher roles than you**', color=0Xff0000))
                     return
                 elif ctx.author.top_role.position < muted_position:
-                    await ctx.send(embed=nextcord.Embed(description=f'**You can\'t unmute members because of muted role position**', color=0Xff0000))
+                    await ctx.send(embed=disnake.Embed(description=f'**You can\'t unmute members because of muted role position**', color=0Xff0000))
                     return
             if muted_role not in member.roles:
-                await ctx.send(embed=nextcord.Embed(description=f'**{member.name} is not muted**', color=0Xff0000))
+                await ctx.send(embed=disnake.Embed(description=f'**{member.name} is not muted**', color=0Xff0000))
                 return
             else:
                 await member.remove_roles(muted_role)
-                await ctx.send(embed=nextcord.Embed(description=f'**{member.mention} has been unmuted**'))
+                await ctx.send(embed=disnake.Embed(description=f'**{member.mention} has been unmuted**'))
 
     @commands.command(name='kick')
     @commands.guild_only()
     @commands.has_permissions(kick_members=True)
     @commands.has_permissions(kick_members=True)
-    async def kick(self, ctx, member: nextcord.Member = None, *, reason: Optional[str] = "Not given"):
+    async def kick(self, ctx, member: disnake.Member = None, *, reason: Optional[str] = "Not given"):
         """ Kick all those who u don't wanna keep"""
         if member is None:
-            await ctx.send(embed=nextcord.Embed(description=f'**Enter a member to kick idiot**', color=0Xff0000))
+            await ctx.send(embed=disnake.Embed(description=f'**Enter a member to kick idiot**', color=0Xff0000))
             return
         elif member in [ctx.author, ctx.guild.me, ctx.guild.owner]:
-            await ctx.send(embed=nextcord.Embed(description=f'**I will never do this <:drake_no:838129333264580608> **', color=0Xff0000))
+            await ctx.send(embed=disnake.Embed(description=f'**I will never do this <:drake_no:838129333264580608> **', color=0Xff0000))
             return
         else:
             if (not ctx.author == ctx.guild.owner) and (ctx.author.top_role <= member.top_role):
-                await ctx.send(embed=nextcord.Embed(description=f'**You can\'t kick members with same or higher roles than you**', color=0Xff0000))
+                await ctx.send(embed=disnake.Embed(description=f'**You can\'t kick members with same or higher roles than you**', color=0Xff0000))
                 return
             try:
-                await member.send(embed=nextcord.Embed(description=f'**You have ben kicked from {ctx.guild.name}\nReason: {reason}**', color=0Xff0000))
+                await member.send(embed=disnake.Embed(description=f'**You have ben kicked from {ctx.guild.name}\nReason: {reason}**', color=0Xff0000))
             except Exception as e:
                 pass
             await member.kick(reason=reason)
-            await ctx.send(embed=nextcord.Embed(description=f'**{member} has been kicked**', color=0Xff0000))
+            await ctx.send(embed=disnake.Embed(description=f'**{member} has been kicked**', color=0Xff0000))
 
     @commands.command(name='ban')
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(ban_members=True)
     @commands.guild_only()
-    async def ban(self, ctx, member: nextcord.Member, _time: commands.Greedy[TimeConverter] = None, *, reason=None):
+    async def ban(self, ctx, member: disnake.Member, _time: commands.Greedy[TimeConverter] = None, *, reason=None):
         """ Ban members who are not following the rules """
         if member is None:
-            await ctx.send(embed=nextcord.Embed(description=f'**Pls enter a member to ban**', color=0Xff0000))
+            await ctx.send(embed=disnake.Embed(description=f'**Pls enter a member to ban**', color=0Xff0000))
             return
         elif member == ctx.author:
             return
         elif member == ctx.guild.me:
-            await ctx.send(embed=nextcord.Embed(description=f'**Lmao why whould I ban myself**', color=0Xff0000))
+            await ctx.send(embed=disnake.Embed(description=f'**Lmao why whould I ban myself**', color=0Xff0000))
             return
         elif await self.Intensity.is_owner(member):
-            await ctx.send(embed=nextcord.Embed(description=f'**{choice(no)} I will never ban my owner**', color=0Xff0000))
+            await ctx.send(embed=disnake.Embed(description=f'**{choice(no)} I will never ban my owner**', color=0Xff0000))
             return
         elif ctx.guild.me.top_role <= member.top_role:
-            await ctx.send(embed=nextcord.Embed(description=f'**{choice(no)} I can\'t ban {member.mention} because they have a equal or higher position than my top role**', color=0Xff0000))
+            await ctx.send(embed=disnake.Embed(description=f'**{choice(no)} I can\'t ban {member.mention} because they have a equal or higher position than my top role**', color=0Xff0000))
             return
         elif member == ctx.guild.owner:
-            await ctx.send(embed=nextcord.Embed(description=f'** {choice(no)} Damn you can\' ban the server owner**', color=0Xff0000))
+            await ctx.send(embed=disnake.Embed(description=f'** {choice(no)} Damn you can\' ban the server owner**', color=0Xff0000))
             return
         elif (not ctx.author == ctx.guild.owner) and (ctx.author.top_role <= member.top_role):
-            await ctx.send(embed=nextcord.Embed(description=f'**You can\'t ban members with roles higher than you**', color=0Xff0000))
+            await ctx.send(embed=disnake.Embed(description=f'**You can\'t ban members with roles higher than you**', color=0Xff0000))
             return
         timed = False
         if isinstance(_time, list) and (None in _time):
@@ -273,7 +273,7 @@ class moderation(commands.Cog):
             timed = True
         if not member.bot:
             try:
-                await member.send(embed=nextcord.Embed(description=f'**You have been banned from {ctx.guild.name}\nReason:{reason}**', color=0Xff0000))
+                await member.send(embed=disnake.Embed(description=f'**You have been banned from {ctx.guild.name}\nReason:{reason}**', color=0Xff0000))
             except:
                 pass
         message = f'**{member} has been banned from {ctx.guild.name}**'
@@ -281,27 +281,27 @@ class moderation(commands.Cog):
             message += f'** until <t:{int(time.time() + sum(_time))}:R> **'
             ctx.send(time.time() + sum(_time))"""
         await member.ban(reason=reason)
-        await ctx.send(embed=nextcord.Embed(description=message, color=0Xff0000))
+        await ctx.send(embed=disnake.Embed(description=message, color=0Xff0000))
         # await asyncio.sleep(a)
 
     @commands.command(name='unban')
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(ban_members=True, send_messages=True)
     @commands.guild_only()
-    async def unban(self, ctx, users: commands.Greedy[nextcord.User] = None):
+    async def unban(self, ctx, users: commands.Greedy[disnake.User] = None):
         """Unban users if you think they have improved"""
         banned_users = await ctx.guild.bans()
         banned_users = [i.user for i in banned_users]
         users = [i for i in users if i in banned_users]
         for i in users:
             await ctx.guild.unban(i)
-        await ctx.send(embed=nextcord.Embed(description=f'**Members unbanned**', color=0Xff0000))
+        await ctx.send(embed=disnake.Embed(description=f'**Members unbanned**', color=0Xff0000))
 
     @commands.command(name='nickname', aliases=['nick', 'newnick'])
     @commands.has_permissions(manage_nicknames=True, change_nickname=True)
     @commands.bot_has_permissions(manage_nicknames=True, change_nickname=True)
     @commands.guild_only()
-    async def nickname(self, ctx, member: Optional[nextcord.Member] = None, *, _nick=None):
+    async def nickname(self, ctx, member: Optional[disnake.Member] = None, *, _nick=None):
         """Change your nickname or just mess up your friend's name"""
         member = member or ctx.author
         if len(_nick) > 32:
@@ -320,13 +320,13 @@ class moderation(commands.Cog):
     @commands.bot_has_permissions(manage_messages=True, read_message_history=True, send_messages=True)
     @commands.guild_only()
     @commands.is_owner()
-    async def purge(self, ctx: commands.Context, command: Union[nextcord.Member, nextcord.Role, int, str] = None, *, others: Union[int, str] = None):
+    async def purge(self, ctx: commands.Context, command: Union[disnake.Member, disnake.Role, int, str] = None, *, others: Union[int, str] = None):
         """ Clean unwanted messages from the current channel"""
         def check(message):
             """ Checks if a message needs to be purged """
-            if isinstance(command, nextcord.member.Member):
+            if isinstance(command, disnake.member.Member):
                 return command == message.author
-            elif isinstance(command, nextcord.role.Role):
+            elif isinstance(command, disnake.role.Role):
                 return command in message.author.roles
             elif isinstance(command, str):
                 if command.lower() in ['bot', 'bots']:

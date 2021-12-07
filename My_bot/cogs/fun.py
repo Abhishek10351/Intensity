@@ -1,5 +1,5 @@
-import nextcord
-from nextcord.ext import commands
+import disnake
+from disnake.ext import commands
 from pandas import DataFrame, read_csv
 from random import randint, choice
 from numpy import int64
@@ -15,7 +15,7 @@ class Fun(commands.Cog):
         self.Intensity = Intensity
 
     @commands.command(name='pokemon', aliases=('pokedex', 'pokémon', 'pokédex'))
-    @cooldown(1, 10, commands.BucketType.user)
+    @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.guild_only()
     async def pokemon(self, ctx, id_name: Union[int, str] = None, *, form=''):
         """ Sends details about the given pokemon according to name or ID.
@@ -63,7 +63,7 @@ class Fun(commands.Cog):
                         poke_info = poke_info.set_index('Form')
                         poke_info = poke_info.loc[form]
                     except KeyError:
-                        await ctx.send(embed=nextcord.Embed(description=f'{poke_info.iloc[1]} has no form {form}'))
+                        await ctx.send(embed=disnake.Embed(description=f'{poke_info.iloc[1]} has no form {form}'))
                         return
             name = poke_info.iloc[1]
             forms = map(lambda x: x if x != " " else "", forms)
@@ -85,7 +85,7 @@ class Fun(commands.Cog):
             details += '**'
             url = f'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{id}.png'
             user_name = f'{ctx.author}'
-            embed = nextcord.Embed(
+            embed = disnake.Embed(
                 title=f"#{id}-{name}", description=details, color=0Xffff)
             embed.set_thumbnail(url=url)
             if not id_name:
@@ -115,8 +115,8 @@ class Fun(commands.Cog):
     async def randfact(self, ctx, type: Optional[str] = None):
         """Get a random fact"""
         fact = get_fact()
-        embed = nextcord.Embed(title="That's a fact",
-                               description=f'**{fact}**', colour=nextcord.Color.random())
+        embed = disnake.Embed(title="That's a fact",
+                              description=f'**{fact}**', colour=disnake.Color.random())
         await ctx.send(embed=embed)
 
 

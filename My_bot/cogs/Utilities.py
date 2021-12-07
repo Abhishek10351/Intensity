@@ -1,5 +1,5 @@
-import nextcord
-from nextcord.ext import commands
+import disnake
+from disnake.ext import commands
 from sql import execute, fetch
 from random import randrange
 import time
@@ -27,7 +27,7 @@ class Utility(commands.Cog):
             else:
                 emotes += str(i)
                 emote_size += 1
-        await ctx.send(embed=nextcord.Embed(title=f'**Total Emojis:{len(emojis)}\nEmotes:{emote_size}\nAnimated:{animated_size}**', description=emotes+animated, color=nextcord.Colour.random()))
+        await ctx.send(embed=disnake.Embed(title=f'**Total Emojis:{len(emojis)}\nEmotes:{emote_size}\nAnimated:{animated_size}**', description=emotes+animated, color=disnake.Colour.random()))
 
     @commands.command(aliases=["server_roles"])
     @commands.guild_only()
@@ -37,16 +37,16 @@ class Utility(commands.Cog):
         all_roles = [i.mention if i.id !=
                      ctx.guild.id else i.name for i in ctx.guild.roles]
         all_roles.reverse()
-        await ctx.send(embed=nextcord.Embed(title=f'**Roles Available in {ctx.guild.name}**', description='\n'.join(all_roles)))
+        await ctx.send(embed=disnake.Embed(title=f'**Roles Available in {ctx.guild.name}**', description='\n'.join(all_roles)))
 
     @commands.command(name='avatar', aliases=['av', 'pfp'])
     @commands.cooldown(1, 20, commands.BucketType.user)
-    async def avatar(self, ctx: commands.Context, *, member: nextcord.Member = None):
+    async def avatar(self, ctx: commands.Context, *, member: disnake.Member = None):
         """Embeds the avatar of the member"""
         user = ctx.author.display_avatar
         member = member or ctx.author
         url = member.display_avatar.url
-        embed = nextcord.Embed(title='Avatar\n',)
+        embed = disnake.Embed(title='Avatar\n',)
         embed.set_author(name=f'{member}', icon_url=url)
         embed.set_image(url=url)
         embed.set_footer(
@@ -55,24 +55,24 @@ class Utility(commands.Cog):
 
     @commands.command(name='role', aliases=['roleinfo', 'role-info'])
     @commands.cooldown(1, 10, commands.BucketType.channel)
-    async def role(self, ctx, *, _role: nextcord.Role = None):
+    async def role(self, ctx, *, _role: disnake.Role = None):
         if _role is not None:
             _time = _role.created_at
             _time = _time.strftime("%I:%m %p, %B %-d %Y")
-            embed = nextcord.Embed(title=_role.name, color=_role.color)
+            embed = disnake.Embed(title=_role.name, color=_role.color)
             embed.add_field(name="ID", value=f'**{_role.id}**')
             embed.add_field(name="Created", value=_time)
             embed.add_field(name="Mentionable:", value=_role.mentionable)
             embed.add_field(name="Hoisted", value=f"**{_role.hoist}**")
             await ctx.send(embed=embed)
         if _role is None:
-            await ctx.send(embed=nextcord.Embed(description='**Cmmon enter a role**'))
+            await ctx.send(embed=disnake.Embed(description='**Cmmon enter a role**'))
 
     @commands.command(aliases=['serverinfo', 'server-info'])
     async def server(self, ctx):
         """ Get some details of the server """
-        embed = nextcord.Embed(
-            title=ctx.guild, color=nextcord.Colour.red())
+        embed = disnake.Embed(
+            title=ctx.guild, color=disnake.Colour.red())
         embed.add_field(name='Server Owner', value=f'**{ctx.guild.owner}**')
         embed.add_field(
             name='Roles', value=f'**{len(ctx.guild.roles)}**')
@@ -90,22 +90,22 @@ class Utility(commands.Cog):
     async def prefix(self, ctx, new_prefix: str = None):
         """Change my prefix in this server"""
         if new_prefix is None:
-            await ctx.send(embed=nextcord.Embed(description='**Enter the new prefix idiot.**', color=0Xff0000))
+            await ctx.send(embed=disnake.Embed(description='**Enter the new prefix idiot.**', color=0Xff0000))
             return
         if len(new_prefix) > 5:
-            await ctx.send(embed=nextcord.Embed(description='**Prefix length can\'t be more than 5 **', color=0Xff0000))
+            await ctx.send(embed=disnake.Embed(description='**Prefix length can\'t be more than 5 **', color=0Xff0000))
             return
         else:
             old_prefix = prefixes.find_one({"_id": ctx.message.guild.id})
             prefixes.update_one({"_id": ctx.message.guild.id}, {
                                 "$set": {"prefix": new_prefix}})
-            await ctx.send(embed=nextcord.Embed(description=f'**Prefix changed in {ctx.guild} from `{old_prefix["prefix"]}` to `{new_prefix.strip()}` **', color=nextcord.Colour.random()))
+            await ctx.send(embed=disnake.Embed(description=f'**Prefix changed in {ctx.guild} from `{old_prefix["prefix"]}` to `{new_prefix.strip()}` **', color=disnake.Colour.random()))
 
     @commands.command(aliases=["userinfo", "member", "memberinfo"])
     @commands.guild_only()
-    async def user(self, ctx, member: nextcord.Member = None):
+    async def user(self, ctx, member: disnake.Member = None):
         member = member or ctx.author
-        embed = nextcord.Embed(
+        embed = disnake.Embed(
             description=member.mention, colour=member.colour)
         # embed.add_field(name="Permissions", values=)
         embed.add_field(name="Account created",
@@ -126,11 +126,11 @@ class Utility(commands.Cog):
         """ Get the time when the bot was last run """
         await ctx.send(f' Uptime - <t:{int(self.Intensity.starttime)}:F>')
 
-    @commands.command(hidden=True)
+    @commands.command(hidden=True, is_hidden=True)
     @commands.is_owner()
     async def stop(self, ctx):
         """Make the bot go offline"""
-        await ctx.send(embed=nextcord.Embed(description="**Closing bot in 1 sec**", colour=nextcord.Colour.random()))
+        await ctx.send(embed=disnake.Embed(description="**Closing bot in 1 sec**", colour=disnake.Colour.random()))
         time.sleep(1)
         await self.Intensity.close()
 

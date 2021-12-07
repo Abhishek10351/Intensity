@@ -1,5 +1,5 @@
-import nextcord
-from nextcord.ext import commands, tasks
+import disnake
+from disnake.ext import commands, tasks
 import asyncio
 from random import choice
 
@@ -23,8 +23,8 @@ class Status(commands.Cog):
         await self.Intensity.wait_until_ready()
         status = ['dnd', 'idle']
         while not self.Intensity.is_closed():
-            activity = nextcord.Activity(
-                type=nextcord.ActivityType.listening, name="Youtube Music")
+            activity = disnake.Activity(
+                type=disnake.ActivityType.listening, name="Youtube Music")
             await self.Intensity.change_presence(activity=activity, status=choice(status))
             await asyncio.sleep(600)
 

@@ -1,4 +1,4 @@
-from nextcord.ext.commands import Converter, CommandError
+from disnake.ext.commands import Converter, CommandError
 import re
 from datetime import datetime, timedelta
 from random import randint

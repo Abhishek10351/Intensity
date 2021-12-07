@@ -1,5 +1,5 @@
-import nextcord
-from nextcord.ext import commands
+import disnake
+from disnake.ext import commands
 import time
 from sql import fetch
 from timeit import timeit
@@ -33,8 +33,8 @@ class misc(commands.Cog):
         def mongodb():
             prefixes.find_one({"_id": ctx.guild.id})
 
-        embed = nextcord.Embed(description='**Ping**',
-                               colour=nextcord.Colour.red())
+        embed = disnake.Embed(description='**Ping**',
+                              colour=disnake.Colour.red())
         embed.add_field(name='Discord Websocket Latency <:discord:915501670979477524>',
                         value=f'`{round((self.Intensity.latency) * 1000)} ms`')
         embed.add_field(

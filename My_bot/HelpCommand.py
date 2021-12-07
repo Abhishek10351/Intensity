@@ -1,5 +1,5 @@
-from nextcord import Embed, Colour
-from nextcord.ext.commands import HelpCommand
+from disnake import Embed, Colour
+from disnake.ext.commands import HelpCommand
 
 
 class CustomHelpCommand(HelpCommand):
@@ -26,12 +26,11 @@ class CustomHelpCommand(HelpCommand):
         embed = Embed(title=command, description=f'**{command.help}**',
                       color=Colour.random())
         if command.aliases:
-            embed.add_field(name="Command Aliases", 
-            value=f'**{ ", ".join(command.aliases)}**')
+            embed.add_field(name="Command Aliases",
+                            value=f'**{ ", ".join(command.aliases)}**')
         await self.get_destination().send(embed=embed)
 
     async def send_group_help(self, group):
         embed = Embed(title=group,
-        description=f"**{group.short_doc}**", color=Colour.random())
+                      description=f"**{group.short_doc}**", color=Colour.random())
         await self.get_destination().send(embed=embed)
-

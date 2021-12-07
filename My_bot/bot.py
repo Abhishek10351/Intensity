@@ -1,17 +1,17 @@
 import logging
 import datetime
 import time
-from nextcord.ext import commands
-import nextcord
+from disnake.ext import commands
+import disnake
 from pathlib import Path
 from random import choice
 from sql import execute, fetch
-from nextcord import utils
+from disnake import utils
 from dotenv import load_dotenv
 from os import getenv
 from HelpCommand import CustomHelpCommand
 from mongo import prefixes
-intents = nextcord.Intents.all()
+intents = disnake.Intents.all()
 
 logging.basicConfig(level=logging.INFO)
 
@@ -47,9 +47,9 @@ class Intensity(commands.Bot):
         for cog in all_cogs:
             self.load_extension(f"cogs.{cog}")
         print("Cogs loaded successfully!")
-        game = nextcord.Game(
-            choice(['tic-tac-toe', 'with nextcord bots', 'on 9 guilds', 'with Phil Swift']))
-        # await self.change_presence(activity=nextcord.Streaming(name=" youtube", url=f"https://www.youtube.com/watch?v=raTkZqz680Y", platform='YouTube'))
+        game = disnake.Game(
+            choice(['tic-tac-toe', 'with disnake bots', 'on 9 guilds', 'with Phil Swift']))
+        # await self.change_presence(activity=disnake.Streaming(name=" youtube", url=f"https://www.youtube.com/watch?v=raTkZqz680Y", platform='YouTube'))
         print('I am ready')
 
 

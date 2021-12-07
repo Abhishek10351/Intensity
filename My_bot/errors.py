@@ -1,4 +1,4 @@
-from nextcord.ext.commands import ConversionError, Converter
+from disnake.ext.commands import ConversionError, Converter
 from typing import Union
 
 
