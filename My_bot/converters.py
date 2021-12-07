@@ -1,8 +1,9 @@
 from nextcord.ext.commands import Converter, CommandError
 import re
-from datetime import datetime , timedelta
+from datetime import datetime, timedelta
 from random import randint
 """Module for Converting user input into their respective types"""
+
 
 class TimeConverter(Converter):
     async def convert(self, ctx, argument: str):
@@ -18,13 +19,13 @@ class TimeConverter(Converter):
             try:
                 if argument.endswith(_minutes):
                     minutes = argument
-                    
+
                     return float(re.search(r"(\d+)", argument).group()) * 60
                 elif argument.endswith(_hours):
                     hours = argument
                     return float(hours) * 3600
                 elif re.search(argument, "|".join(_days)):
-                    days = int(re.match(r"(^\d+)",argument).group())
+                    days = int(re.match(r"(^\d+)", argument).group())
                     return timedelta(days=days)
                 elif argument.endswith(_weeks):
                     weeks = argument
@@ -70,4 +71,3 @@ class SlowmodeTimeConverter(Converter):
                 return timedelta(seconds=int(seconds))
             else:
                 raise ValueError
-

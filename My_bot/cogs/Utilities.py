@@ -5,6 +5,7 @@ from random import randrange
 import time
 from mongo import prefixes
 
+
 class Utility(commands.Cog):
     def __init__(self, Intensity: commands.Bot):
         self.Intensity = Intensity
@@ -26,7 +27,7 @@ class Utility(commands.Cog):
             else:
                 emotes += str(i)
                 emote_size += 1
-        await ctx.send(embed=nextcord.Embed(title=f'**Total Emojis:{len(emojis)}\nEmotes:{emote_size}\nAnimated:{animated_size}**', description=emotes + animated, color=nextcord.Colour.random()))
+        await ctx.send(embed=nextcord.Embed(title=f'**Total Emojis:{len(emojis)}\nEmotes:{emote_size}\nAnimated:{animated_size}**', description=emotes+animated, color=nextcord.Colour.random()))
 
     @commands.command(aliases=["server_roles"])
     @commands.guild_only()
@@ -40,7 +41,7 @@ class Utility(commands.Cog):
 
     @commands.command(name='avatar', aliases=['av', 'pfp'])
     @commands.cooldown(1, 20, commands.BucketType.user)
-    async def avatar(self, ctx: commands.Context, member: nextcord.Member=None):
+    async def avatar(self, ctx: commands.Context, *, member: nextcord.Member = None):
         """Embeds the avatar of the member"""
         user = ctx.author.display_avatar
         member = member or ctx.author
@@ -54,7 +55,7 @@ class Utility(commands.Cog):
 
     @commands.command(name='role', aliases=['roleinfo', 'role-info'])
     @commands.cooldown(1, 10, commands.BucketType.channel)
-    async def role(self, ctx, *, _role: nextcord.Role=None):
+    async def role(self, ctx, *, _role: nextcord.Role = None):
         if _role is not None:
             _time = _role.created_at
             _time = _time.strftime("%I:%m %p, %B %-d %Y")
@@ -86,7 +87,7 @@ class Utility(commands.Cog):
     @commands.command(aliases=["change_prefix"])
     @commands.has_permissions(administrator=True)
     @commands.cooldown(1, 10, commands.BucketType.guild)
-    async def prefix(self, ctx, new_prefix: str=None):
+    async def prefix(self, ctx, new_prefix: str = None):
         """Change my prefix in this server"""
         if new_prefix is None:
             await ctx.send(embed=nextcord.Embed(description='**Enter the new prefix idiot.**', color=0Xff0000))
@@ -95,22 +96,28 @@ class Utility(commands.Cog):
             await ctx.send(embed=nextcord.Embed(description='**Prefix length can\'t be more than 5 **', color=0Xff0000))
             return
         else:
-            old_prefix = prefixes.find_one({"_id":ctx.message.guild.id})
-            prefixes.update_one({"_id":ctx.message.guild.id}, {"$set": {"prefix":new_prefix.strip()}})
+            old_prefix = prefixes.find_one({"_id": ctx.message.guild.id})
+            prefixes.update_one({"_id": ctx.message.guild.id}, {
+                                "$set": {"prefix": new_prefix}})
             await ctx.send(embed=nextcord.Embed(description=f'**Prefix changed in {ctx.guild} from `{old_prefix["prefix"]}` to `{new_prefix.strip()}` **', color=nextcord.Colour.random()))
-    
+
     @commands.command(aliases=["userinfo", "member", "memberinfo"])
     @commands.guild_only()
-    async def user(self, ctx, member: nextcord.Member=None):
+    async def user(self, ctx, member: nextcord.Member = None):
         member = member or ctx.author
-        embed = nextcord.Embed(description=member.mention, colour=member.colour)
-        #embed.add_field(name="Permissions", values=)
-        embed.add_field(name="Account created", value=member.created_at.strftime("%I:%m %p, %B %d %Y"))
-        embed.add_field(name="Joined at", value=member.joined_at.strftime("%I:%m %p, %B %d %Y"))
-        
-        embed.add_field(name="Roles", value="".join(map(lambda i: i.mention if i.id!=ctx.guild.id else "", member.roles)), inline=False)
+        embed = nextcord.Embed(
+            description=member.mention, colour=member.colour)
+        # embed.add_field(name="Permissions", values=)
+        embed.add_field(name="Account created",
+                        value=member.created_at.strftime("%I:%m %p, %B %d %Y"))
+        embed.add_field(name="Joined at",
+                        value=member.joined_at.strftime("%I:%m %p, %B %d %Y"))
+
+        embed.add_field(name="Roles", value="".join(map(
+            lambda i: i.mention if i.id != ctx.guild.id else "", member.roles)), inline=False)
         embed.set_author(name=member, icon_url=member.display_avatar.url)
-        embed.set_footer(text=f"Invoked by {ctx.author}", icon_url=ctx.author.display_avatar.url)
+        embed.set_footer(
+            text=f"Invoked by {ctx.author}", icon_url=ctx.author.display_avatar.url)
         embed.set_thumbnail(url=member.display_avatar.url)
         await ctx.send(embed=embed)
 
@@ -118,7 +125,7 @@ class Utility(commands.Cog):
     async def uptime(self, ctx):
         """ Get the time when the bot was last run """
         await ctx.send(f' Uptime - <t:{int(self.Intensity.starttime)}:F>')
-    
+
     @commands.command(hidden=True)
     @commands.is_owner()
     async def stop(self, ctx):

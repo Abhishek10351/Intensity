@@ -44,14 +44,13 @@ class moderation(commands.Cog):
             await ctx.send(embed=nextcord.Embed(description='**That idiot has blocked me so I couldn\'t dm**'))
         else:
             await ctx.send(error)
-    
 
     @commands.command(name='slowmode', aliases=['sm', 'slow'])
     @commands.guild_only()
     @commands.cooldown(1, 10, commands.BucketType.channel)
     @commands.has_permissions(manage_channels=True)
     @commands.bot_has_permissions(manage_channels=True)
-    async def slowmode(self, ctx: commands.Context, _time: commands.Greedy[SlowmodeTimeConverter]=None):
+    async def slowmode(self, ctx: commands.Context, _time: commands.Greedy[SlowmodeTimeConverter] = None):
         """Set a slowmode in the current channel if the chat is going to fast """
         def get_slowmode_time(__seconds) -> str:
             message = ""
@@ -70,11 +69,11 @@ class moderation(commands.Cog):
                 return await ctx.send(f"**The slowmode in {ctx.channel.mention} is {get_slowmode_time(ctx.channel.slowmode_delay)}**")
             else:
                 return await ctx.send(f'**Currently there is no slowmode in {ctx.channel.mention}**')
-        if 0 in _time and len(_time)>1:
+        if 0 in _time and len(_time) > 1:
             await ctx.send('**Invalid format\nThe correct format is `,slowmode 1s 1m 0h`**')
             return
-        
-        if _time[0]==0:
+
+        if _time[0] == 0:
             if ctx.channel.slowmode_delay:
                 await ctx.channel.edit(slowmode_delay=0)
                 await ctx.send(f"**Slowmode turned off in {ctx.channel.mention}**")
@@ -96,7 +95,7 @@ class moderation(commands.Cog):
     @commands.has_permissions(administrator=True)
     @commands.bot_has_permissions(manage_roles=True)
     @commands.guild_only()
-    async def muterole(self, ctx, role: nextcord.Role=None):
+    async def muterole(self, ctx, role: nextcord.Role = None):
         me = ctx.guild.me
         if role.is_default() or role.is_integration() or role.is_bot_managed() or role.is_premium_subscriber() or role is None:
             await ctx.send(embed=nextcord.Embed(description=f'**Please enter a valid role to save as Mute role**', color=0Xff0000))
@@ -128,10 +127,10 @@ class moderation(commands.Cog):
     @commands.guild_only()
     @commands.has_permissions(kick_members=True, manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
-    async def mute(self, ctx, member: nextcord.Member = None, _time: commands.Greedy[TimeConverter]=None, reason="Not Given"):
+    async def mute(self, ctx, member: nextcord.Member = None, _time: commands.Greedy[TimeConverter] = None, reason="Not Given"):
         """Give users a infraction """
         role_id = fetch(
-            f'select role_id from muted_roles where guild_id = {ctx.guild.id}')
+            f'select role_id from muted_roles where guild_id = ( ? )', ctx.guild.id)
         if role_id is None:
             prefix = fetch(
                 f'select role_id from muted_roles where guild_id = {ctx.guild.id} ;')
@@ -179,7 +178,7 @@ class moderation(commands.Cog):
     @commands.guild_only()
     @commands.has_permissions(kick_members=True, manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
-    async def unmute(self, ctx, member: nextcord.Member=None):
+    async def unmute(self, ctx, member: nextcord.Member = None):
         if member is None:
             await ctx.send(embed=nextcord.Embed(description=f'**Enter a member to mute idiot.**'))
             return
@@ -221,7 +220,7 @@ class moderation(commands.Cog):
     @commands.guild_only()
     @commands.has_permissions(kick_members=True)
     @commands.has_permissions(kick_members=True)
-    async def kick(self, ctx, member: nextcord.Member=None, *, reason: Optional[str]="Not given"):
+    async def kick(self, ctx, member: nextcord.Member = None, *, reason: Optional[str] = "Not given"):
         """ Kick all those who u don't wanna keep"""
         if member is None:
             await ctx.send(embed=nextcord.Embed(description=f'**Enter a member to kick idiot**', color=0Xff0000))
@@ -240,12 +239,11 @@ class moderation(commands.Cog):
             await member.kick(reason=reason)
             await ctx.send(embed=nextcord.Embed(description=f'**{member} has been kicked**', color=0Xff0000))
 
-
     @commands.command(name='ban')
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(ban_members=True)
     @commands.guild_only()
-    async def ban(self, ctx, member: nextcord.Member, _time: commands.Greedy[TimeConverter]=None, *, reason=None):
+    async def ban(self, ctx, member: nextcord.Member, _time: commands.Greedy[TimeConverter] = None, *, reason=None):
         """ Ban members who are not following the rules """
         if member is None:
             await ctx.send(embed=nextcord.Embed(description=f'**Pls enter a member to ban**', color=0Xff0000))
@@ -284,17 +282,13 @@ class moderation(commands.Cog):
             ctx.send(time.time() + sum(_time))"""
         await member.ban(reason=reason)
         await ctx.send(embed=nextcord.Embed(description=message, color=0Xff0000))
-        #await asyncio.sleep(a)
-    
-    @ban.error
-    async def ban_error(self, ctx, error):
-        raise error
-    
+        # await asyncio.sleep(a)
+
     @commands.command(name='unban')
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(ban_members=True, send_messages=True)
     @commands.guild_only()
-    async def unban(self, ctx, users: commands.Greedy[nextcord.User]=None):
+    async def unban(self, ctx, users: commands.Greedy[nextcord.User] = None):
         """Unban users if you think they have improved"""
         banned_users = await ctx.guild.bans()
         banned_users = [i.user for i in banned_users]
@@ -307,7 +301,7 @@ class moderation(commands.Cog):
     @commands.has_permissions(manage_nicknames=True, change_nickname=True)
     @commands.bot_has_permissions(manage_nicknames=True, change_nickname=True)
     @commands.guild_only()
-    async def nickname(self, ctx, member: Optional[nextcord.Member]=None, *, _nick=None):
+    async def nickname(self, ctx, member: Optional[nextcord.Member] = None, *, _nick=None):
         """Change your nickname or just mess up your friend's name"""
         member = member or ctx.author
         if len(_nick) > 32:
@@ -326,7 +320,7 @@ class moderation(commands.Cog):
     @commands.bot_has_permissions(manage_messages=True, read_message_history=True, send_messages=True)
     @commands.guild_only()
     @commands.is_owner()
-    async def purge(self, ctx: commands.Context, command: Union[nextcord.Member, nextcord.Role, int, str]=None, *, others: Union[int, str]=None):
+    async def purge(self, ctx: commands.Context, command: Union[nextcord.Member, nextcord.Role, int, str] = None, *, others: Union[int, str] = None):
         """ Clean unwanted messages from the current channel"""
         def check(message):
             """ Checks if a message needs to be purged """

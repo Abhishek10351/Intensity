@@ -1,5 +1,7 @@
 from nextcord import Embed, Colour
 from nextcord.ext.commands import HelpCommand
+
+
 class CustomHelpCommand(HelpCommand):
     async def send_bot_help(self, mapping):
         """Sends information about the bot"""
@@ -22,12 +24,14 @@ class CustomHelpCommand(HelpCommand):
     async def send_command_help(self, command):
         """ Sends information about the given command."""
         embed = Embed(title=command, description=f'**{command.help}**',
-                               color=Colour.random())
+                      color=Colour.random())
         if command.aliases:
-            embed.add_field(name="Command Aliases", value=f'**{ ", ".join(command.aliases)}**')
+            embed.add_field(name="Command Aliases", 
+            value=f'**{ ", ".join(command.aliases)}**')
         await self.get_destination().send(embed=embed)
-    
+
     async def send_group_help(self, group):
-        embed = Embed(title=group,description=f"**{group.short_doc}**", color=Colour.random())
+        embed = Embed(title=group,
+        description=f"**{group.short_doc}**", color=Colour.random())
         await self.get_destination().send(embed=embed)
 

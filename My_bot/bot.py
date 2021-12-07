@@ -16,7 +16,6 @@ intents = nextcord.Intents.all()
 logging.basicConfig(level=logging.INFO)
 
 
-
 class Intensity(commands.Bot):
     """Main Bot class to control the main bot"""
 
@@ -34,7 +33,7 @@ class Intensity(commands.Bot):
         """ Returns a prefix for the bot """
         if message.guild is not None:
             try:
-                prefix = prefixes.find_one({"_id":message.guild.id})["prefix"]
+                prefix = prefixes.find_one({"_id": message.guild.id})["prefix"]
             except Exception as e:
                 prefixes.insert_one({"_id": message.guild.id, "prefix": ","})
                 prefix = (',')

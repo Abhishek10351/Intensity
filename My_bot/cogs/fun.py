@@ -9,14 +9,15 @@ from typing import Union, Optional
 from randfacts import get_fact
 from urllib.parse import urljoin
 
+
 class Fun(commands.Cog):
     def __init__(self, Intensity: commands.Bot):
         self.Intensity = Intensity
 
     @commands.command(name='pokemon', aliases=('pokedex', 'pokémon', 'pokédex'))
-    #@cooldown(1, 10, commands.BucketType.user)
+    @cooldown(1, 10, commands.BucketType.user)
     @commands.guild_only()
-    async def pokemon(self, ctx, id_name: Union[int, str]=None, *, form=''):
+    async def pokemon(self, ctx, id_name: Union[int, str] = None, *, form=''):
         """ Sends details about the given pokemon according to name or ID.
         Sends info of a random pokemon if no name/id is given """
         await ctx.trigger_typing()
@@ -65,7 +66,7 @@ class Fun(commands.Cog):
                         await ctx.send(embed=nextcord.Embed(description=f'{poke_info.iloc[1]} has no form {form}'))
                         return
             name = poke_info.iloc[1]
-            forms = [i for i in forms if i != ' ']
+            forms = map(lambda x: x if x != " " else "", forms)
             forms = ', '.join(forms)
             _type = poke_info.iloc[3]
             if not str(poke_info.iloc[4]).isspace():
@@ -95,7 +96,6 @@ class Fun(commands.Cog):
                     name=f'Invoked by {user_name}', icon_url=ctx.author.avatar_url)
             await ctx.send(embed=embed)
             _link = f'http://play.pokemonshowdown.com/sprites/ani/{name.lower().replace(" ", "").replace(".", "")}.gif'
-            # await ctx.send(_link)
         except UnboundLocalError:
             pass
 
@@ -103,7 +103,7 @@ class Fun(commands.Cog):
     @commands.guild_only()
     @commands.has_permissions(send_tts_messages=True)
     @commands.bot_has_permissions(send_tts_messages=True)
-    async def tts(self, ctx, *, message=None):
+    async def tts(self, ctx: commands.Context, *, message=None):
         """Converts your text message to `text to speech` message """
         if message is not None:
             await ctx.send(message, tts=True)
@@ -115,11 +115,9 @@ class Fun(commands.Cog):
     async def randfact(self, ctx, type: Optional[str] = None):
         """Get a random fact"""
         fact = get_fact()
-        embed = nextcord.Embed(
-            description=f'**{fact}**', colour=nextcord.Color.random())
+        embed = nextcord.Embed(title="That's a fact",
+                               description=f'**{fact}**', colour=nextcord.Color.random())
         await ctx.send(embed=embed)
-    
-    
 
 
 def setup(Intensity):

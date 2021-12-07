@@ -17,7 +17,6 @@ class Status(commands.Cog):
             await asyncio.sleep(1800)
             channel = self.Intensity.get_channel(870959477577359390)
             await channel.send(f'`{round(self.Intensity.latency * 1000)} s`')
-            
 
     @tasks.loop(minutes=10)
     async def random_status(self):
