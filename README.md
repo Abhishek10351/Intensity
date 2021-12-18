@@ -1,10 +1,12 @@
 # Intensity
 
-- **Description**
-`Intensity` is a `multi-purpose bot` for discord servers, we offer `moderation commands`, `games`, `server utils` and many more.
-Our wide range of commands also feature `Discord U.I .` i.e `Discord Buttons, Embeds, Selects` etc.
+## Description
 
-- **Available module for commands**
+`Intensity` is a `multi-purpose bot` for discord servers, we offer `moderation commands`, `games`, `server utils` among many more.
+Our wide range of commands also feature `Discord U.I .` i.e `Discord Buttons, Embeds, Selects, User Commands, Message Commands` etc.
+
+## Available module for commands
+
 1 Moderation
 2 Fun
 3 Games
