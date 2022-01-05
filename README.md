@@ -15,8 +15,6 @@ Our wide range of commands also feature `Discord U.I.` i.e `Discord Buttons, Emb
 
  Add the bot in your server to try out all the fun commands.
 
-**We don't have a xp and currency system , but you can expect to get it by the end of January.**
-
 ## Author
 
 [Abhishek Kashyap](https://github.com/Abhishek10351)
