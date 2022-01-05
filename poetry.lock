@@ -1,6 +1,6 @@
 [[package]]
 name = "aiohttp"
-version = "3.7.4.post0"
+version = ">=3.7.4"
 description = "Async http client/server framework (asyncio)"
 category = "main"
 optional = false
