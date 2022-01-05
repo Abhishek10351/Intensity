@@ -7,11 +7,11 @@ Our wide range of commands also feature `Discord U.I.` i.e `Discord Buttons, Emb
 
 ## Available module for commands
 
-[x] Moderation
-[x] Fun
-[x] Games
-[x] Utilities
-[x] Miscellaneous
+- [x] Moderation
+- [x] Fun
+- [x] Games
+- [x] Utilities
+- [x] Miscellaneous
 
  Add the bot in your server to try out all the fun commands.
 
