@@ -2,8 +2,8 @@
 
 ## Description
 
-`Intensity` is a `multi-purpose bot` for discord servers, we offer `moderation commands`, `games`, `server utils` among many more.
-Our wide range of commands also feature `Discord U.I.` i.e `Discord Buttons, Embeds, Selects, User Commands, Message Commands` etc.
+`Intensity` is a `multi-purpose` bot for discord servers deveoped with the help of Disnake, we offer `moderation commands`, `games`, `server utils` among many more.
+Our wide range of commands also feature `Discord U.I.` i.e Discord Buttons, Embeds, Selects, User Commands, Message Commands etc.
 
 ## Available module for commands
 
@@ -13,11 +13,11 @@ Our wide range of commands also feature `Discord U.I.` i.e `Discord Buttons, Emb
 - [x] Utilities
 - [x] Miscellaneous
 
- Add the bot in your server to try out all the fun commands.
+**Add the bot in your server to try out all the fun commands.**
 
 ## Author
 
-[Abhishek Kashyap](https://github.com/Abhishek10351)
+[Abhishek Kashyap](https://github.com/Abhishek10351/)
 
 ## Versions
 
@@ -26,5 +26,5 @@ Our wide range of commands also feature `Discord U.I.` i.e `Discord Buttons, Emb
 
 [1]: https://img.shields.io/badge/py-3.9-green
 [2]: https://www.python.org/downloads
-[3]: https://img.shields.io/badge/disnake-2.2.2-green
+[3]: https://img.shields.io/badge/disnake-2.3.0-green
 [4]: https://pypi.org/project/disnake
