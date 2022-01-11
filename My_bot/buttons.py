@@ -3,25 +3,30 @@ from typing import List
 
 
 class Confirm(ui.View):
-    def __init__(self):
+    def __init__(self, members: List):
         super().__init__()
         self.value = None
 
-    # When the confirm button is pressed, set the inner value to `True` and
-    # stop the View from listening to more input.
-    # We also send the user an ephemeral message that we're confirming their choice.
     @ui.button(label='Confirm', style=ButtonStyle.green)
     async def confirm(self, button: ui.Button, interaction: Interaction):
-        await interaction.response.send_message('Confirming', ephemeral=True)
         self.value = True
-        self.stop()
+        for i in children:
+            i.disabled = True
+        await interaction.response.edit_message(content="Confirmed", ephemeral=True)
 
-    # This one is similar to the confirmation button except sets the inner value to `False`
     @ui.button(label='Cancel', style=ButtonStyle.grey)
     async def cancel(self, button: ui.Button, interaction: Interaction):
-        await interaction.response.send_message('Cancelling', ephemeral=True)
         self.value = False
-        self.stop()
+        for i in children:
+            i.disabled = True
+        await interaction.response.edit_message(content="Cancelled", ephemeral=True)
+
+    async def interaction_check(self, interaction):
+        if interaction.user not in members:
+            await interaction.response.send_message("https://tenor.com/view/rick-roll-rick-ashley-never-gonna-give-you-up-gif-22113173", ephemeral=True)
+            return False
+        else:
+            return True
 
 
 class TicTacToeButtons(ui.Button):
@@ -66,12 +71,6 @@ class TicTacToeGame(ui.View):
         self.board = "1️⃣ 2️⃣ 3️⃣ 4️⃣ 5️⃣ 6️⃣ 7️⃣ 8️⃣ 9️⃣".split(" ")
         self.current_game = current_game
 
-    async def on_timeout(self):
-        self.current_game = next(self.game)
-        for button in self.children:
-            button.disabled = True
-        # await interaction.response.edit_message(content=f"{view.current_game[0].mention} you Won", view=view)
-
     def check_win(self, current_board):
         """checks if any user won the game"""
         board = current_board
@@ -97,38 +96,35 @@ class RPSButtons(ui.Button):
     def __init__(self, emote, val):
         self.emote = emote
         self.value = val
-        super().__init__(emoji=emote, style=ButtonStyle.blurple)
+        super().__init__(emoji=emote, style=ButtonStyle.grey)
 
     async def callback(self, interaction: Interaction):
         view = self.view
-        if interaction.user not in [view.player, view.opponent]:
-            await interaction.response.send_message("https://tenor.com/view/rick-roll-rick-ashley-never-gonna-give-you-up-gif-22113173", ephemeral=True)
-        else:
-            if view.game[interaction.user] is None:
-                view.game[interaction.user] = self.value
-                if None in view.game.values():
-                    await interaction.response.edit_message(content=f"**{interaction.user} has made their move**", view=view)
-                    return
-                else:
-                    ac = view.game[view.player]
-                    pc = view.game[view.opponent]
-                    val = view.WINNER_DICT[ac][pc]
-
-                    for i in view.children:
-                        i.disabled = True
-
-                    if val == 0:
-                        await interaction.response.edit_message(content="**It's a draw**", view=view)
-                        return
-                    elif val == 1:
-                        await interaction.response.edit_message(content=f"**{view.player} Won by chosing {ac}**", view=view)
-                        return
-                    elif val == -1:
-                        await interaction.response.edit_message(content=f"**{view.opponent} Won by chosing {pc}**", view=view)
-                        return
-                await interaction.response.edit_message(content=f"**{interaction.user} has chosen**", view=view)
+        if view.game[interaction.user] is None:
+            view.game[interaction.user] = self.value
+            if None in view.game.values():
+                await interaction.response.edit_message(content=f"**{interaction.user} has made their move**", view=view)
+                return
             else:
-                await interaction.response.send_message(":grimacing: you already selected", ephemeral=True)
+                ac = view.game[view.player]
+                pc = view.game[view.opponent]
+                val = view.WINNER_DICT[ac][pc]
+
+                for i in view.children:
+                    i.disabled = True
+
+                if val == 0:
+                    await interaction.response.edit_message(content="**It's a draw**", view=view)
+                    return
+                elif val == 1:
+                    await interaction.response.edit_message(content=f"**{view.player} Won by chosing {ac}**", view=view)
+                    return
+                elif val == -1:
+                    await interaction.response.edit_message(content=f"**{view.opponent} Won by chosing {pc}**", view=view)
+                    return
+            await interaction.response.edit_message(content=f"**{interaction.user} has chosen**", view=view)
+        else:
+            await interaction.response.send_message(":grimacing: you already selected", ephemeral=True)
 
 
 class RPSGames(ui.View):
@@ -136,8 +132,8 @@ class RPSGames(ui.View):
         self.player = player
         self.opponent = opponent
         super().__init__()
-        emojis = "<:Rock:909069636060999690> <:Paper:909069634324533280> <:Scissors:909069637331873802>".split(
-            " ")
+        emojis = ["<:Rock:909069636060999690>",
+                  "<:Paper:909069634324533280>", "<:Scissors:909069637331873802>"]
         for emoji, value in zip(emojis, ["r", "p", "s"]):
             self.add_item(RPSButtons(emote=emoji, val=value))
         self.game = {}
@@ -161,5 +157,9 @@ class RPSGames(ui.View):
             }
         }
 
-    async def interaction_check(self, interation):
-        return True
+    async def interaction_check(self, interaction):
+        if interaction.user not in [self.player, self.opponent]:
+            await interaction.response.send_message("https://tenor.com/view/rick-roll-rick-ashley-never-gonna-give-you-up-gif-22113173", ephemeral=True)
+            return False
+        else:
+            return True
