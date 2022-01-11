@@ -97,6 +97,9 @@ class Utility(commands.Cog):
             return
         else:
             old_prefix = prefixes.find_one({"_id": ctx.message.guild.id})
+            if old_prefix == new_prefix:
+                await ctx.send(embed=disnake.Embed(description=f"Ah shit here we go again"))
+                return
             prefixes.update_one({"_id": ctx.message.guild.id}, {
                                 "$set": {"prefix": new_prefix}})
             await ctx.send(embed=disnake.Embed(description=f'**Prefix changed in {ctx.guild} from `{old_prefix["prefix"]}` to `{new_prefix.strip()}` **', color=disnake.Colour.random()))
@@ -107,7 +110,6 @@ class Utility(commands.Cog):
         member = member or ctx.author
         embed = disnake.Embed(
             description=member.mention, colour=member.colour)
-        # embed.add_field(name="Permissions", values=)
         embed.add_field(name="Account created",
                         value=member.created_at.strftime("%I:%m %p, %B %d %Y"))
         embed.add_field(name="Joined at",
