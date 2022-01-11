@@ -20,21 +20,21 @@ class Games(commands.Cog):
         """Start a game of rock-paper-scissors with your friends"""
         view = RPSGames(ctx.author, player)
         await ctx.send(content="**Let the game Begin**", view=view)
-    
+
     @rps.error
     async def rps_error(self, ctx, error):
         print(error)
 
-    @commands.group(aliases=['ttt', 'tic'])
+    @commands.group(name="tictactoe", aliases=['ttt', 'tic'])
     @commands.guild_only()
     async def tictactoe(self, ctx, player: disnake.Member):
         """Play a game of ticactoe with your buddy"""
         emojis = ["<:ttt_x:902516406090878976>", "<:ttt_y:902515608640434198>"]
-        shuffle(emojis)
         players = [ctx.author, player]
-        shuffle(players)
         button_types = [disnake.ButtonStyle.green,
                         disnake.ButtonStyle.blurple]
+        shuffle(emojis)
+        shuffle(players)
         shuffle(button_types)
         game = cycle(zip(players, emojis, button_types))
         current_game = next(game)
