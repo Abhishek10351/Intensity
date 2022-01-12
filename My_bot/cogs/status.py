@@ -18,15 +18,15 @@ class Status(commands.Cog):
             channel = self.Intensity.get_channel(870959477577359390)
             await channel.send(f'`{round(self.Intensity.latency * 1000)} s`')
 
-    @tasks.loop(minutes=10)
+    @tasks.loop(hours=1)
     async def random_status(self):
         await self.Intensity.wait_until_ready()
-        status = ['dnd', 'idle']
         while not self.Intensity.is_closed():
-            activity = disnake.Activity(
-                type=disnake.ActivityType.listening, name="Youtube Music")
-            await self.Intensity.change_presence(activity=activity, status=choice(status))
-            await asyncio.sleep(600)
+            game = disnake.Game(
+            choice(['tic-tac-toe', 'with disnake bots', 'on 9 guilds', 'with Phil Swift', "football with your head"]))
+            stream = disnake.Streaming(name=" Youtube", url=f"https://www.youtube.com/watch?v=raTkZqz680Y", platform='YouTube')
+            await self.change_presence(activity=choice[stream, game])
+            await asyncio.sleep(3600)
 
 
 def setup(Intensity):
