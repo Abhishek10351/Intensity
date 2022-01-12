@@ -21,7 +21,7 @@ class Intensity(commands.Bot):
 
     def __init__(self):
         super().__init__(command_prefix=',', case_insensitive=True, intents=intents,
-                         owner_ids=[707107037070360596], help_command=CustomHelpCommand())
+                         owner_ids=[707107037070360596, 810821127789740054], help_command=CustomHelpCommand())
 
     def run(self):
         """ Bring the bot online """
@@ -47,9 +47,7 @@ class Intensity(commands.Bot):
         for cog in all_cogs:
             self.load_extension(f"cogs.{cog}")
         print("Cogs loaded successfully!")
-        game = disnake.Game(
-            choice(['tic-tac-toe', 'with disnake bots', 'on 9 guilds', 'with Phil Swift']))
-        # await self.change_presence(activity=disnake.Streaming(name=" youtube", url=f"https://www.youtube.com/watch?v=raTkZqz680Y", platform='YouTube'))
+        
         print('I am ready')
 
 
