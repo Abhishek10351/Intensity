@@ -14,22 +14,19 @@ class Reply(commands.Cog):
     async def errors(self, ctx: commands.Context, error):
         if isinstance(error, commands.CommandNotFound):
             pass
-        elif isinstance(error, commands.MemberNotFound):
+        elif isinstance(error, (commands.MemberNotFound, commands.errors.RoleNotFound)):
             await ctx.send(embed=disnake.Embed(description=f"**{error}**", colour=disnake.Colour.red()))
-        elif isinstance(error, commands.errors.RoleNotFound):
-            await ctx.message.add_reaction('😬')
-            await ctx.send(embed=disnake.Embed(description=f"**{error.argument} is not a valid role**", colour=disnake.Colour.red()))
         elif isinstance(error, commands.CommandOnCooldown):
-            await ctx.send(f'**You\'re on cooldown try again in {round(error.retry_after)} seconds**')
+            await ctx.send(embed=disnake.Embed(description=f'**You\'re on cooldown try again in {round(error.retry_after)} seconds**'))
         elif isinstance(error, commands.NoPrivateMessage):
-            await ctx.send('**This command works only on servers**')
+            await ctx.send(embed=disnake.Embed(description='**This command works only on servers**'))
         elif isinstance(error, commands.MissingPermissions):
             pass
         elif isinstance(error, commands.BotMissingPermissions):
             bot_perms = error.missing_permissions
-            await ctx.send(f"**I don't have {', '.join(bot_perms)} permissions**")
+            await ctx.send(embed=disnake.Embed(description=f"**I don't have {', '.join(bot_perms)} permissions**"))
         else:
-            await ctx.send(error)
+            await ctx.send(f"**{error}**")
 
 
 def setup(Intensity):
