@@ -18,27 +18,26 @@ class TimeConverter(Converter):
         if re.match(r"^\d+\D{1,7}", argument):
             try:
                 if argument.endswith(_minutes):
-                    minutes = argument
-
-                    return float(re.search(r"(\d+)", argument).group()) * 60
+                    minutes = float(re.search(r"(\d+)", argument).group())
+                    return timedelta(minutes=minutes)
                 elif argument.endswith(_hours):
-                    hours = argument
-                    return float(hours) * 3600
+                    hours = int(re.match(r"(^\d+)", argument).group())
+                    return timedelta(hours=hours)
                 elif re.search(argument, "|".join(_days)):
                     days = int(re.match(r"(^\d+)", argument).group())
                     return timedelta(days=days)
                 elif argument.endswith(_weeks):
-                    weeks = argument
-                    return float(weeks) * 2592000
+                    weeks = int(re.match(r"(^\d+)", argument).group())
+                    return timedelta(weeks=weeks)
                 elif argument.endswith(_months):
-                    months = argument
-                    return float(months) * 2592000
+                    months = int(re.match(r"(^\d+)", argument).group())
+                    return timedelta(days=days*30)
                 elif argument.endswith(_years):
-                    years = argument
-                    return float(years) * 31104000
+                    years = int(re.match(r"(^\d+)", argument).group())
+                    return timedelta(days=years*365)
                 elif argument.endswith(_seconds):
-                    seconds = argument
-                    return float(seconds)
+                    seconds = int(re.match(r"(^\d+)", argument).group())
+                    return timedelta(seconds=seconds)
                 else:
                     return None
             except Exception as e:
@@ -61,7 +60,6 @@ class SlowmodeTimeConverter(Converter):
             return timedelta(minutes=int(minutes))
         elif re.search("|".join(_hours), argument):
             hours = re.findall(r"^\d+", argument)[0]
-            print(hours)
             return timedelta(hours=int(hours))
         elif re.search("|".join(_seconds), argument):
             seconds = re.findall(r"^\d+", argument)[0]
