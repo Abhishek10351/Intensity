@@ -102,6 +102,8 @@ class Utility(commands.Cog):
                 return
             prefixes.update_one({"_id": ctx.message.guild.id}, {
                                 "$set": {"prefix": new_prefix}})
+            
+            await ctx.me.edit(nick = f"Intensity [{new_prefix}]")
             await ctx.send(embed=disnake.Embed(description=f'**Prefix changed in {ctx.guild} from `{old_prefix["prefix"]}` to `{new_prefix.strip()}` **', color=disnake.Colour.random()))
 
     @commands.command(aliases=["userinfo", "member", "memberinfo"])
