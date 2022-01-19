@@ -66,3 +66,37 @@ class SlowmodeTimeConverter(Converter):
             return timedelta(seconds=int(seconds))
         else:
             return None
+
+class TimeoutConverter(Converter):
+    async def convert(self, ctx, argument: str):
+        numbers = tuple([map(str, range(10))])
+        _seconds = ('seconds', 'second', 'sec', 's')
+        _minutes = ('minutes', 'minute', 'min', 'm')
+        _hours = ('hours', 'hour', "hr", 'h')
+        _days = ('days', 'day', 'd')
+        _weeks = ('weeks', 'week', 'w')
+        if re.match(r"^\d+\D{1,7}", argument):
+            try:
+                if argument.endswith(_minutes):
+                    minutes = float(re.search(r"(\d+)", argument).group())
+                    return timedelta(minutes=minutes)
+                elif argument.endswith(_hours):
+                    hours = int(re.match(r"(^\d+)", argument).group())
+                    return timedelta(hours=hours)
+                elif re.search(argument, "|".join(_days)):
+                    days = int(re.match(r"(^\d+)", argument).group())
+                    return timedelta(days=days)
+                elif argument.endswith(_weeks):
+                    weeks = int(re.match(r"(^\d+)", argument).group())
+                    return timedelta(weeks=weeks)
+                elif argument.endswith(_seconds):
+                    seconds = int(re.match(r"(^\d+)", argument).group())
+                    return timedelta(seconds=seconds)
+                else:
+                    return None
+            except Exception as e:
+                print(str(e))
+            # else:
+                #   return None
+        else:
+            raise ConversionError
