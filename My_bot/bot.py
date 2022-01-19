@@ -11,13 +11,14 @@ from dotenv import load_dotenv
 from os import getenv
 from HelpCommand import CustomHelpCommand
 from mongo import prefixes
+from webserver import keep_alive
 intents = disnake.Intents.all()
 
 logging.basicConfig(level=logging.INFO)
 
 
 class Intensity(commands.Bot):
-    """Main Bot class to control the main bot"""
+    """Main Bot class to control the bot"""
 
     def __init__(self):
         super().__init__(command_prefix=',', case_insensitive=True, intents=intents,
@@ -50,9 +51,7 @@ class Intensity(commands.Bot):
         
         print('I am ready')
 
-
+keep_alive()
 bot = Intensity()
 bot.starttime = time.time()
 bot.run()
-
-# github.com/pokeapi
