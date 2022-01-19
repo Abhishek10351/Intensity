@@ -25,7 +25,7 @@ class Status(commands.Cog):
             game = disnake.Game(
             choice(['tic-tac-toe', 'with disnake bots', 'on 9 guilds', 'with Phil Swift', "football with your head"]))
             stream = disnake.Streaming(name=" Youtube", url=f"https://www.youtube.com/watch?v=raTkZqz680Y", platform='YouTube')
-            await self.change_presence(activity=choice[stream, game])
+            await self.Intensity.change_presence(activity=choice([stream, game]))
             await asyncio.sleep(3600)
 
 
