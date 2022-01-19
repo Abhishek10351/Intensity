@@ -330,10 +330,12 @@ class Moderation(commands.Cog):
     @commands.guild_only()
     async def nickname(self, ctx, member: Optional[disnake.Member] = None, *, _nick=None):
         """Change your nickname or a particular member's"""
-        if member and (member.top_role >= ctx.author.top_role) and ( (ctx.me.top_role >= ctx.author.top_role) or ctx.author.is_owner()) :
-            pass
-        else:
-            return
+        if member:
+            if (member.top_role >= ctx.author.top_role) and ( (ctx.me.top_role >= ctx.author.top_role) or
+            ctx.author.is_owner()) :
+                pass
+            else:
+                return
         member = member or ctx.author
         if len(_nick) > 32:
             await ctx.reply('**Nickname length must be between 0 and 32 characters**')
