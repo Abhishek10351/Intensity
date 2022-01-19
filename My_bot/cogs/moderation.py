@@ -6,7 +6,7 @@ from random import choice
 from sql import execute, fetch
 from typing import Union, Optional
 from emojis import no, shocked
-from converters import TimeConverter, SlowmodeTimeConverter
+from converters import TimeConverter, SlowmodeTimeConverter, TimeoutConverter
 import asyncio
 import time
 from datetime import timedelta, datetime
@@ -14,7 +14,7 @@ from errors import SlowmodeError
 import re
 
 
-class moderation(commands.Cog):
+class Moderation(commands.Cog):
     """ Module for controlling the server and members """
 
     def __init__(self, Intensity: commands.Bot):
@@ -54,7 +54,7 @@ class moderation(commands.Cog):
         """Change the slowmode delay in the current channel"""
         pass
 
-    @slowmode.command(name="set")
+    @slowmode.command(name="set", aliases=["change"])
     async def set_sm(self, ctx: commands.Context, _time: commands.Greedy[SlowmodeTimeConverter] = None):
         """Sets a slowmode in the current channel"""
         def get_slowmode_time(__seconds) -> str:
@@ -118,7 +118,7 @@ class moderation(commands.Cog):
     @commands.has_permissions(administrator=True)
     @commands.bot_has_permissions(manage_roles=True)
     @commands.guild_only()
-    async def muterole(self, ctx, role: disnake.Role = None):
+    async def muterole(self, ctx, role: disnake.Role):
         me = ctx.guild.me
         if role.is_default() or role.is_integration() or role.is_bot_managed() or role.is_premium_subscriber() or role is None:
             await ctx.send(embed=disnake.Embed(description=f'**Please enter a valid role to save as Mute role**', color=0Xff0000))
@@ -199,7 +199,7 @@ class moderation(commands.Cog):
 
     @commands.command(name='unmute')
     @commands.guild_only()
-    @commands.has_permissions(kick_members=True, manage_roles=True)
+    @commands.has_permissions(manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
     async def unmute(self, ctx, member: disnake.Member = None):
         if member is None:
@@ -300,12 +300,16 @@ class moderation(commands.Cog):
             except:
                 pass
         message = f'**{member} has been banned from {ctx.guild.name}**'
-        """if time:
+        if time:
             message += f'** until <t:{int(time.time() + sum(_time))}:R> **'
-            ctx.send(time.time() + sum(_time))"""
+            ctx.send(time.time() + sum(_time))
         await member.ban(reason=reason)
         await ctx.send(embed=disnake.Embed(description=message, color=0Xff0000))
-        # await asyncio.sleep(a)
+        a = timedelta()
+        for i in _time:
+            a += i 
+        await asyncio.sleep(a.seconds)
+        await member.unban(reason="Time over")
 
     @commands.command(name='unban')
     @commands.has_permissions(ban_members=True)
@@ -325,7 +329,11 @@ class moderation(commands.Cog):
     @commands.bot_has_permissions(manage_nicknames=True, change_nickname=True)
     @commands.guild_only()
     async def nickname(self, ctx, member: Optional[disnake.Member] = None, *, _nick=None):
-        """Change your nickname or just mess up your friend's name"""
+        """Change your nickname or a particular member's"""
+        if member and (member.top_role >= ctx.author.top_role) and ( (ctx.me.top_role >= ctx.author.top_role) or ctx.author.is_owner()) :
+            pass
+        else:
+            return
         member = member or ctx.author
         if len(_nick) > 32:
             await ctx.reply('**Nickname length must be between 0 and 32 characters**')
@@ -365,7 +373,7 @@ class moderation(commands.Cog):
                 elif command.lower() in ['endswith', 'endwith']:
                     return message.content.endswith(str(others))
                 else:
-                    return 100
+                    return False
             elif isinstance(command, int):
                 return True
 
@@ -382,10 +390,19 @@ class moderation(commands.Cog):
                     return others
             else:
                 return 100
-        deleted = await ctx.channel.purge(limit=limit(), check=check)
+        deleted = await ctx.channel.purge(limit=limit(), check=check, after=datetime.now()-timedelta(days=14))
         if len(deleted) >= 5:
             await ctx.send(f'**{len(deleted)} messages purged in {ctx.channel.mention}**')
+    
+    @commands.command()
+    @commands.has_permissions(moderate_members=True)
+    @commands.bot_has_permissions(moderate_members=True)
+    async def timeout(self, ctx, member: disnake.Member, _time: TimeoutConverter):
+        """Add a timeout for a member"""
+        if _time.days>7:
+            await ctx.send("You can timeout members for max two hours")
+        await member.timeout(duration=_time)
 
 
 def setup(Intensity):
-    Intensity.add_cog(moderation(Intensity))
+    Intensity.add_cog(Moderation(Intensity))
