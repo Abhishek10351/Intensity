@@ -13,7 +13,6 @@ from HelpCommand import CustomHelpCommand
 from mongo import prefixes
 from webserver import keep_alive
 intents = disnake.Intents.all()
-
 logging.basicConfig(level=logging.INFO)
 
 
@@ -44,14 +43,13 @@ class Intensity(commands.Bot):
 
     async def on_ready(self):
         print('Logged in ', end='\r')
-        all_cogs = [p.stem for p in Path("cogs").glob("*.py")]
-        for cog in all_cogs:
-            self.load_extension(f"cogs.{cog}")
-        print("Cogs loaded successfully!")
         
         print('I am ready')
 
-keep_alive()
+#keep_alive()
 bot = Intensity()
+all_cogs = [p.stem for p in Path("cogs").glob("*.py")]
+for cog in all_cogs:
+    bot.load_extension(f"cogs.{cog}")
 bot.starttime = time.time()
 bot.run()
