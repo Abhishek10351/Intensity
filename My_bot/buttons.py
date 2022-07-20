@@ -163,3 +163,18 @@ class RPSGames(ui.View):
             return False
         else:
             return True
+
+
+class Paginator(ui.View):
+    def __init__(self):
+        self.value = 0
+        super().__init__()
+    
+    @ui.button(emoji="👉")
+    async def right(self, button, interaction):
+        self.value += 1
+        await interaction.response.edit_message(content=self.value)
+    @ui.button(emoji="👈")
+    async def left(self, button, interaction):
+        self.value -= 1
+        await interaction.response.edit_message(content=self.value)
