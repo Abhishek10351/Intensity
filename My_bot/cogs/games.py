@@ -21,9 +21,6 @@ class Games(commands.Cog):
         view = RPSGames(ctx.author, player)
         await ctx.send(content="**Let the game Begin**", view=view)
 
-    @rps.error
-    async def rps_error(self, ctx, error):
-        print(error)
 
     @commands.group(name="tictactoe", aliases=['ttt', 'tic'])
     @commands.guild_only()

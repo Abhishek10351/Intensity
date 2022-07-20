@@ -12,8 +12,11 @@ from os import getenv
 from HelpCommand import CustomHelpCommand
 from mongo import prefixes
 from webserver import keep_alive
+
 intents = disnake.Intents.all()
+
 logging.basicConfig(level=logging.INFO)
+load_dotenv()
 
 
 class Intensity(commands.Bot):
@@ -21,11 +24,10 @@ class Intensity(commands.Bot):
 
     def __init__(self):
         super().__init__(command_prefix=',', case_insensitive=True, intents=intents,
-                         owner_ids=[707107037070360596, 810821127789740054], help_command=CustomHelpCommand())
+                         getenv("owner_ids"), help_command=CustomHelpCommand())
 
     def run(self):
         """ Bring the bot online """
-        load_dotenv()
         print("Running..", end='\r')
         super().run(getenv("bot_token"))
 
