@@ -58,7 +58,7 @@ class Utility(commands.Cog):
     async def role(self, ctx, *, _role: disnake.Role = None):
         if _role is not None:
             _time = _role.created_at
-            _time = _time.strftime("%I:%m %p, %B %-d %Y")
+            _time = f"<t:{int(_time.timestamp())}:F>"
             embed = disnake.Embed(title=_role.name, color=_role.color)
             embed.add_field(name="ID", value=f'**{_role.id}**')
             embed.add_field(name="Created", value=_time)
@@ -90,7 +90,7 @@ class Utility(commands.Cog):
     async def prefix(self, ctx, new_prefix: str = None):
         """Change my prefix in this server"""
         if new_prefix is None:
-            await ctx.send(embed=disnake.Embed(description='**Enter the new prefix idiot.**', color=0Xff0000))
+            await ctx.send(embed=disnake.Embed(description='**Please enter a new prefix**'), color=0Xff0000)
             return
         if len(new_prefix) > 5:
             await ctx.send(embed=disnake.Embed(description='**Prefix length can\'t be more than 5 **', color=0Xff0000))
@@ -98,7 +98,7 @@ class Utility(commands.Cog):
         else:
             old_prefix = prefixes.find_one({"_id": ctx.message.guild.id})
             if old_prefix == new_prefix:
-                await ctx.send(embed=disnake.Embed(description=f"Ah shit here we go again"))
+                await ctx.send(embed=disnake.Embed(description=f"Damn it, enter quickly, I'm already using **{new_prefix}**", color=0Xff0000))
                 return
             prefixes.update_one({"_id": ctx.message.guild.id}, {
                                 "$set": {"prefix": new_prefix}})
@@ -113,9 +113,9 @@ class Utility(commands.Cog):
         embed = disnake.Embed(
             description=member.mention, colour=member.colour)
         embed.add_field(name="Account created",
-                        value=member.created_at.strftime("%I:%m %p, %B %d %Y"))
+                        value=f"<t:{int(member.created_at.timestamp())}:F>") #get the timestamp of the account(epoch)
         embed.add_field(name="Joined at",
-                        value=member.joined_at.strftime("%I:%m %p, %B %d %Y"))
+                        value=f"<t:{int(member.joined_at.timestamp())}:F>")
 
         embed.add_field(name="Roles", value="".join(map(
             lambda i: i.mention if i.id != ctx.guild.id else "", member.roles)), inline=False)
