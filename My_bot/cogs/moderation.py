@@ -161,7 +161,6 @@ class Moderation(commands.Cog):
             return
         muted_role = disnake.utils.get(ctx.guild.roles, id=int(role_id[0]))
         my_top_role = ctx.guild.me.top_role
-        muted_position = muted_role.position
         if member is None:
             await ctx.send(embed=disnake.Embed(description='**Idiot enter a member to mute**', color=0Xff0000))
             return
@@ -213,15 +212,14 @@ class Moderation(commands.Cog):
             await ctx.send(embed=disnake.Embed(description=f'{ctx.author.mention} I have no muted role configured in {ctx.guild.name}\nUse `[p]muterole role` to do that'))
             return
         muted_role = disnake.utils.get(ctx.guild.roles, id=int(role_id[0]))
-        my_top_role = ctx.guild.me.top_role.position
-        muted_position = muted_role.position
+        my_top_role = ctx.guild.me.top_role
         if member in [ctx.guild.me, ctx.author, ctx.guild.owner]:
             await ctx.send(embed=disnake.Embed(description="**Dude don't be stupid**", color=0Xff0000))
             return
         elif not muted_role in member.roles:
             await ctx.send(embed=disnake.Embed(description=f'**{member.mention} is not muted atm**', color=0Xff0000))
             return
-        elif my_top_role < muted_position:
+        elif my_top_role < muted_role:
             await ctx.send(embed=disnake.Embed(description=f'**Damn I can\'t unmute due to muted role hiearchy**', color=0Xff0000))
             return
         else:
@@ -229,7 +227,7 @@ class Moderation(commands.Cog):
                 if ctx.author.top_role <= member.top_role:
                     await ctx.send(embed=disnake.Embed(description=f'**You can\'t mute members with same top role as you or with higher roles than you**', color=0Xff0000))
                     return
-                elif ctx.author.top_role.position < muted_position:
+                elif ctx.author.top_role < muted_role:
                     await ctx.send(embed=disnake.Embed(description=f'**You can\'t unmute members because of muted role position**', color=0Xff0000))
                     return
             if muted_role not in member.roles:
@@ -276,14 +274,11 @@ class Moderation(commands.Cog):
         elif member == ctx.guild.me:
             await ctx.send(embed=disnake.Embed(description=f'**Lmao why whould I ban myself**', color=0Xff0000))
             return
-        elif await self.Intensity.is_owner(member):
-            await ctx.send(embed=disnake.Embed(description=f'**{choice(no)} I will never ban my owner**', color=0Xff0000))
-            return
         elif ctx.guild.me.top_role <= member.top_role:
-            await ctx.send(embed=disnake.Embed(description=f'**{choice(no)} I can\'t ban {member.mention} because they have a equal or higher position than my top role**', color=0Xff0000))
+            await ctx.send(embed=disnake.Embed(description=f'**{choice(no)} I can\'t ban {member.mention} because of role hiearchy', color=0Xff0000))
             return
         elif member == ctx.guild.owner:
-            await ctx.send(embed=disnake.Embed(description=f'** {choice(no)} Damn you can\' ban the server owner**', color=0Xff0000))
+            await ctx.send(embed=disnake.Embed(description=f'** {choice(no)} Damn you can\'t ban the server owner**', color=0Xff0000))
             return
         elif (not ctx.author == ctx.guild.owner) and (ctx.author.top_role <= member.top_role):
             await ctx.send(embed=disnake.Embed(description=f'**You can\'t ban members with roles higher than you**', color=0Xff0000))
@@ -352,7 +347,6 @@ class Moderation(commands.Cog):
     @commands.has_permissions(manage_messages=True, read_message_history=True)
     @commands.bot_has_permissions(manage_messages=True, read_message_history=True, send_messages=True)
     @commands.guild_only()
-    @commands.is_owner()
     async def purge(self, ctx: commands.Context, command: Union[disnake.Member, disnake.Role, int, str] = None, *, others: Union[int, str] = None):
         """ Clean unwanted messages from the current channel"""
         def check(message):
@@ -404,6 +398,7 @@ class Moderation(commands.Cog):
         if _time.days>7:
             await ctx.send("You can timeout members for max two hours")
         await member.timeout(duration=_time)
+        await ctx.send(f"**{member} has been timed out for {_time}**")
 
 
 def setup(Intensity):
