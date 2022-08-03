@@ -24,7 +24,7 @@ class Intensity(commands.Bot):
 
     def __init__(self):
         super().__init__(command_prefix=',', case_insensitive=True, intents=intents,
-                         getenv("owner_ids"), help_command=CustomHelpCommand())
+                         owner_ids = getenv("owner_ids"), help_command=CustomHelpCommand())
 
     def run(self):
         """ Bring the bot online """
