@@ -68,7 +68,7 @@ class TicTacToeGame(ui.View):
         for x in range(3):
             for y in range(3):
                 self.add_item(TicTacToeButtons(y, (x*3)+y))
-        self.board = "1️⃣ 2️⃣ 3️⃣ 4️⃣ 5️⃣ 6️⃣ 7️⃣ 8️⃣ 9️⃣".split(" ")
+        self.board = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣']
         self.current_game = current_game
 
     def check_win(self, current_board):
@@ -114,7 +114,7 @@ class RPSButtons(ui.Button):
                     i.disabled = True
 
                 if val == 0:
-                    await interaction.response.edit_message(content="**It's a draw**", view=view)
+                    await interaction.response.edit_message(content=f"**It's a draw, both players vhose {ac}**", view=view)
                     return
                 elif val == 1:
                     await interaction.response.edit_message(content=f"**{view.player} Won by chosing {ac}**", view=view)

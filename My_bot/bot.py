@@ -23,7 +23,7 @@ class Intensity(commands.Bot):
     """Main Bot class to control the bot"""
 
     def __init__(self):
-        super().__init__(command_prefix=',', case_insensitive=True, intents=intents,
+        super().__init__(command_prefix=',', case_insensitive=True, intents=intents,owner_ids=
                          getenv("owner_ids"), help_command=CustomHelpCommand())
 
     def run(self):
@@ -45,7 +45,6 @@ class Intensity(commands.Bot):
 
     async def on_ready(self):
         print('Logged in ', end='\r')
-        
         print('I am ready')
 
 #keep_alive()
