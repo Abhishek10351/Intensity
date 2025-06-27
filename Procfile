@@ -1,1 +1,0 @@
-worker : python My_bot/bot.py
